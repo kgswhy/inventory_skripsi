@@ -16,9 +16,25 @@ class DatabaseSeeder extends Seeder
         User::create([
             'name' => 'Admin',
             'username' => 'admin',
+            'email' => 'admin@example.com',
+            'phone' => '081234567890',
+            'birth_date' => '2000-01-01',
+            'address' => 'Jl. Admin',
             'password' => Hash::make('password'),
             'role' => 'admin',
-            'status' => 'active',
+            
+        ]);
+
+        // Create some sample staff members
+        User::create([
+            'name' => 'John Doe',
+            'username' => 'johndoe',
+            'email' => 'john@example.com',
+            'phone' => '081234567891',
+            'birth_date' => '2000-01-01',
+            'address' => 'Jl. Staff',
+            'password' => Hash::make('password'),
+            'role' => 'staff',
         ]);
     }
 }

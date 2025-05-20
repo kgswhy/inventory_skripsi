@@ -20,12 +20,27 @@ Route::middleware('auth')->group(function () {
     
     // Admin routes
     Route::prefix('admin')->name('admin.')->group(function () {
-        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-        Route::get('/manage-staff', [StaffController::class, 'index'])->name('manage-staff');
-        Route::post('/staff', [StaffController::class, 'store'])->name('staff.store');
-        Route::put('/staff/{staff}', [StaffController::class, 'update'])->name('staff.update');
-        Route::delete('/staff/{staff}', [StaffController::class, 'destroy'])->name('staff.destroy');
-        Route::get('/profile', [ProfileController::class, 'edit'])->name('profile');
-        Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+        Route::get('/dashboard', function () {
+            return view('admin.dashboard');
+        })->name('dashboard');
+        
+        Route::get('/profile', [\App\Http\Controllers\Admin\ProfileController::class, 'edit'])->name('profile');
+        Route::put('/profile', [\App\Http\Controllers\Admin\ProfileController::class, 'update'])->name('profile.update');
+        
+        Route::resource('staff', \App\Http\Controllers\Admin\StaffController::class);
+    });
+
+    // Staff routes
+    Route::middleware(['auth'])->prefix('staff')->name('staff.')->group(function () {
+        Route::get('/dashboard', function () {
+            return view('staff.dashboard');
+        })->name('dashboard');
+        Route::get('/purchase-orders', function () {
+            return view('staff.purchase_orders');
+        })->name('purchase_orders');
+        // Add more staff routes here if needed
+        Route::resource('products', App\Http\Controllers\Staff\ProductController::class);
+        Route::resource('categories', App\Http\Controllers\Staff\CategoryController::class);
+        Route::resource('purchase-orders', App\Http\Controllers\Staff\PurchaseOrderController::class);
     });
 });

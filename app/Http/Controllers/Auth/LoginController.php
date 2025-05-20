@@ -22,7 +22,7 @@ class LoginController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            return redirect()->intended('dashboard');
+            return $this->authenticated($request, Auth::user()) ?? redirect('/');
         }
 
         return back()->withErrors([
@@ -35,6 +35,19 @@ class LoginController extends Controller
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+        return redirect('/');
+    }
+
+    /**
+     * Handle post-login redirection based on user role.
+     */
+    protected function authenticated(Request $request, $user)
+    {
+        if ($user->role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        } elseif ($user->role === 'staff') {
+            return redirect()->route('staff.dashboard');
+        }
         return redirect('/');
     }
 } 
