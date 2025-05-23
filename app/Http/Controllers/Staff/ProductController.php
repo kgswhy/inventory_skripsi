@@ -15,9 +15,20 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        $products = Product::with('category')->get();
-        $categories = Category::all();
-        return view('staff.products', compact('products', 'categories'));
+        try {
+            $products = Product::with('category')->get();
+            $categories = Category::all();
+            
+            if (config('app.debug')) {
+                \Log::info('Products data:', ['products' => $products->toArray()]);
+                \Log::info('Categories data:', ['categories' => $categories->toArray()]);
+            }
+            
+            return view('staff.products', compact('products', 'categories'));
+        } catch (\Exception $e) {
+            \Log::error('Error in ProductController@index: ' . $e->getMessage());
+            return view('staff.products', ['products' => collect([]), 'categories' => collect([])]);
+        }
     }
 
     /**
@@ -33,20 +44,33 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'sku' => 'required|string|max:255|unique:products',
-            'category_id' => 'required|exists:categories,id',
-            'price' => 'required|integer|min:0',
-            'stock' => 'required|integer|min:0',
-            'status' => 'required|in:tersedia,habis',
-            'image' => 'nullable|image|max:2048',
-        ]);
-        if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('products', 'public');
+        try {
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'category_id' => 'required|exists:categories,id',
+                'price' => 'required|integer|min:0',
+                'stock' => 'required|integer|min:0',
+                'status' => 'required|in:tersedia,habis',
+                'image' => 'nullable|image|max:2048',
+            ]);
+
+            if ($request->hasFile('image')) {
+                $validated['image'] = $request->file('image')->store('products', 'public');
+            }
+
+            $product = Product::create($validated);
+            return response()->json([
+                'success' => true, 
+                'message' => 'Product created successfully',
+                'product' => $product->load('category')
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'errors' => $e instanceof \Illuminate\Validation\ValidationException ? $e->errors() : null
+            ], 422);
         }
-        $product = Product::create($validated);
-        return response()->json(['success' => true, 'product' => $product->load('category')]);
     }
 
     /**
@@ -72,7 +96,6 @@ class ProductController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'sku' => 'required|string|max:255|unique:products,sku,' . $product->id,
             'category_id' => 'required|exists:categories,id',
             'price' => 'required|integer|min:0',
             'stock' => 'required|integer|min:0',

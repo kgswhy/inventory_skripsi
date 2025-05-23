@@ -22,7 +22,7 @@ class DatabaseSeeder extends Seeder
             'address' => 'Jl. Admin',
             'password' => Hash::make('password'),
             'role' => 'admin',
-            
+
         ]);
 
         // Create some sample staff members
@@ -33,7 +33,7 @@ class DatabaseSeeder extends Seeder
             'phone' => '081234567891',
             'birth_date' => '2000-01-01',
             'address' => 'Jl. Staff',
-            'password' => Hash::make('password'),
+            'password' => Hash::make(value: 'password'),
             'role' => 'staff',
         ]);
     }
