@@ -18,12 +18,12 @@ class ProductController extends Controller
         try {
             $products = Product::with('category')->get();
             $categories = Category::all();
-            
+
             if (config('app.debug')) {
                 \Log::info('Products data:', ['products' => $products->toArray()]);
                 \Log::info('Categories data:', ['categories' => $categories->toArray()]);
             }
-            
+
             return view('staff.products', compact('products', 'categories'));
         } catch (\Exception $e) {
             \Log::error('Error in ProductController@index: ' . $e->getMessage());
@@ -60,7 +60,7 @@ class ProductController extends Controller
 
             $product = Product::create($validated);
             return response()->json([
-                'success' => true, 
+                'success' => true,
                 'message' => 'Product created successfully',
                 'product' => $product->load('category')
             ]);
@@ -122,5 +122,59 @@ class ProductController extends Controller
         }
         $product->delete();
         return response()->json(['success' => true]);
+    }
+
+    /**
+     * Return a list of products for purchase order dropdown.
+     */
+    public function list()
+    {
+        try {
+            \Log::info('Fetching products for purchase order - Request received');
+            \Log::info('Request details:', [
+                'url' => request()->url(),
+                'method' => request()->method(),
+                'headers' => request()->headers->all(),
+                'authenticated' => auth()->check(),
+                'user' => auth()->user() ? [
+                    'id' => auth()->id(),
+                    'name' => auth()->user()->name,
+                    'role' => auth()->user()->role ?? 'unknown'
+                ] : null
+            ]);
+
+            if (!auth()->check()) {
+                \Log::warning('Unauthenticated request to products/list');
+                return response()->json(['error' => 'Unauthenticated'], 401);
+            }
+
+            $products = Product::with('category')
+                ->where('status', 'tersedia')
+                ->get();
+
+            \Log::info('Raw products query result:', ['count' => $products->count()]);
+
+            $mappedProducts = $products->map(function ($product) {
+                return [
+                    'id' => $product->id,
+                    'name' => $product->name,
+                    'category' => $product->category ? $product->category->name : null,
+                    'category_id' => $product->category_id,
+                    'price' => (int) $product->price,
+                    'stock' => (int) $product->stock,
+                ];
+            })->values();
+
+            \Log::info('Mapped products:', ['products' => $mappedProducts->toArray()]);
+
+            return response()->json($mappedProducts, 200, [], JSON_UNESCAPED_UNICODE);
+        } catch (\Exception $e) {
+            \Log::error('Error in ProductController@list: ' . $e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return response()->json(['error' => 'Failed to fetch products: ' . $e->getMessage()], 500, [], JSON_UNESCAPED_UNICODE);
+        }
     }
 }

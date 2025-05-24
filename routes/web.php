@@ -40,7 +40,10 @@ Route::middleware('auth')->group(function () {
         })->name('purchase_orders');
         // Add more staff routes here if needed
         Route::resource('products', App\Http\Controllers\Staff\ProductController::class);
+        Route::get('products/list', [App\Http\Controllers\Staff\ProductController::class, 'list'])->name('products.list');
         Route::resource('categories', App\Http\Controllers\Staff\CategoryController::class);
         Route::resource('purchase-orders', App\Http\Controllers\Staff\PurchaseOrderController::class);
+        Route::get('/purchase-orders/{id}', [App\Http\Controllers\Staff\PurchaseOrderController::class, 'show'])->name('purchase-orders.show');
     });
 });
+

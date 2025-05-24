@@ -5,7 +5,7 @@
 @section('content')
     <div>
         <div class="flex justify-between items-center mb-6">
-            <h1 class="text-xl font-semibold">Inventory Product</h1>
+            <h1 class="text-xl font-semibold">Daftar Produk</h1>
             <button id="openAddProductBtn"
                 class="px-8 py-3 text-lg font-semibold text-white rounded-lg shadow"
                 style="background-color: #00B69B;"
@@ -16,15 +16,20 @@
         <div class="p-8 mb-10 bg-white rounded-xl shadow">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-lg font-bold">Produk</h2>
-                <input id="searchProductInput" type="text" placeholder="Search"
-                    class="px-4 py-2 w-64 bg-gray-100 rounded border focus:outline-none focus:ring">
+                <div class="relative">
+                    <input id="searchProductInput" type="text" placeholder="Cari produk..."
+                        class="pl-10 pr-4 py-2 w-64 bg-gray-100 rounded-lg border-2 border-gray-200 focus:border-[#00B69B] focus:bg-white focus:outline-none transition" />
+                    <svg xmlns="http://www.w3.org/2000/svg" class="absolute top-2.5 left-3 w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </div>
             </div>
             <div class="overflow-x-auto">
                 <table class="min-w-full text-sm border-separate border-spacing-y-2">
                     <thead>
                         <tr class="text-xs text-gray-500 uppercase">
                             <th class="px-4 py-2 text-left">No.</th>
-                            <th class="px-4 py-2 text-left">Item Name</th>
+                            <th class="px-4 py-2 text-left">Nama Produk</th>
                             <th class="px-4 py-2 text-left">Kategori</th>
                             <th class="px-4 py-2 text-left">Stok</th>
                             <th class="px-4 py-2 text-left">Harga Satuan</th>
@@ -69,12 +74,21 @@
         <div class="p-8 mt-10 bg-white rounded-xl shadow">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-lg font-bold">Kategori</h2>
-                <button id="openAddCategoryBtn2"
-                    class="px-8 py-3 text-lg font-semibold text-white rounded-lg shadow"
-                    style="background-color: #00B69B;"
-                    onmouseover="this.style.backgroundColor='#00997F'" onmouseout="this.style.backgroundColor='#00B69B'">
-                    Tambah Kategori
-                </button>
+                <div class="flex gap-4">
+                    <div class="relative">
+                        <input id="searchCategoryInput" type="text" placeholder="Cari kategori..."
+                            class="pl-10 pr-4 py-2 w-64 bg-gray-100 rounded-lg border-2 border-gray-200 focus:border-[#00B69B] focus:bg-white focus:outline-none transition" />
+                        <svg xmlns="http://www.w3.org/2000/svg" class="absolute top-2.5 left-3 w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </div>
+                    <button id="openAddCategoryBtn2"
+                        class="px-8 py-3 text-lg font-semibold text-white rounded-lg shadow"
+                        style="background-color: #00B69B;"
+                        onmouseover="this.style.backgroundColor='#00997F'" onmouseout="this.style.backgroundColor='#00B69B'">
+                        Tambah Kategori
+                    </button>
+                </div>
             </div>
             <div class="overflow-x-auto">
                 <table class="min-w-full text-sm border-separate border-spacing-y-2">
@@ -142,8 +156,11 @@
                 </div>
                 <div class="mb-6">
                     <label class="block mb-2 text-base font-semibold">Harga Satuan</label>
-                    <input type="number" name="price" id="addProductPriceInput" placeholder="Masukkan Harga"
-                        class="px-4 py-3 w-full text-base bg-gray-100 rounded-lg border-2 border-gray-200 focus:border-[#00B69B] focus:bg-white focus:outline-none transition" />
+                    <div class="relative">
+                        <span class="absolute top-3 left-4 text-gray-500">Rp</span>
+                        <input type="text" name="price" id="addProductPriceInput" placeholder="Masukkan Harga"
+                            class="pl-12 pr-4 py-3 w-full text-base bg-gray-100 rounded-lg border-2 border-gray-200 focus:border-[#00B69B] focus:bg-white focus:outline-none transition" />
+                    </div>
                     <span class="block mt-2 text-xs text-red-500" id="addProductErrorPrice"></span>
                 </div>
                 <div class="mb-8">
@@ -165,60 +182,72 @@
             </form>
         </div>
         <!-- Modal Edit Produk -->
-        <div id="editProductModal"
-            class="flex hidden fixed inset-0 z-50 justify-center items-center backdrop-blur bg-white/30">
-            <form id="editProductForm" class="relative p-8 w-full max-w-xl bg-white rounded-2xl shadow-xl">
-                <button type="button"
-                    class="flex absolute top-4 right-4 justify-center items-center w-8 h-8 text-gray-500 rounded-full hover:bg-gray-200 close-modal"
-                    aria-label="Tutup">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor">
+        <div id="editProductModal" class="flex hidden fixed inset-0 z-50 justify-center items-center bg-black/30">
+            <form id="editProductForm" class="relative p-10 w-full max-w-xl bg-white rounded-2xl shadow-2xl">
+                <button type="button" class="flex absolute top-6 right-6 justify-center items-center w-10 h-10 text-gray-400 rounded-full transition hover:text-gray-600 hover:bg-gray-100 close-modal" aria-label="Tutup">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
-                <h3 class="mb-6 text-2xl font-bold">Edit Produk</h3>
+                <h3 class="mb-2 text-3xl font-bold text-gray-900">Edit Produk</h3>
+                <p class="mb-8 text-gray-500">Ubah detail produk di bawah ini.</p>
                 <input type="hidden" name="id">
-                <div class="mb-4">
+                <div class="mb-6">
+                    <label class="block mb-2 text-base font-semibold">Gambar</label>
+                    <label for="editProductImageInput" class="block flex relative flex-col justify-center items-center h-56 bg-gray-100 rounded-xl border-2 border-gray-300 border-dashed transition cursor-pointer hover:bg-gray-200">
+                        <img id="editProductImagePreview" class="object-contain w-full h-full rounded-xl border border-gray-300" src="" />
+                        <div id="editProductImagePlaceholder" class="flex flex-col justify-center items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="mb-2 w-12 h-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a4 4 0 004 4h10a4 4 0 004-4V7a4 4 0 00-4-4H7a4 4 0 00-4 4z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553 4.553a1.5 1.5 0 01-2.121 2.121L13 12.121l-2.121 2.121a1.5 1.5 0 01-2.121-2.121L9 10" />
+                            </svg>
+                            <span class="text-gray-400">Klik untuk mengubah gambar</span>
+                        </div>
+                        <input id="editProductImageInput" type="file" name="image" class="hidden" accept="image/*">
+                    </label>
+                    <span class="block mt-2 text-xs text-red-500" id="editProductErrorImage"></span>
+                </div>
+                <div class="mb-6">
                     <label class="block mb-2 text-base font-semibold">Nama Produk</label>
-                    <input type="text" name="name" id="editProductNameInput"
-                        class="px-4 py-3 w-full text-base bg-gray-100 rounded-lg focus:outline-none focus:ring" />
-                    <span class="text-xs text-red-500" id="editProductErrorName"></span>
+                    <input type="text" name="name" id="editProductNameInput" placeholder="Masukkan Nama"
+                        class="px-4 py-3 w-full text-base bg-gray-100 rounded-lg border-2 border-gray-200 focus:border-[#00B69B] focus:bg-white focus:outline-none transition" />
+                    <span class="block mt-2 text-xs text-red-500" id="editProductErrorName"></span>
                 </div>
-                <div class="mb-4">
+                <div class="mb-6">
                     <label class="block mb-2 text-base font-semibold">Kategori</label>
-                    <select name="category_id" id="editProductCategorySelect"
-                        class="px-4 py-3 w-full text-base bg-gray-100 rounded-lg focus:outline-none focus:ring">
-                        <option value="">Pilih Kategori</option>
-                    </select>
-                    <span class="text-xs text-red-500" id="editProductErrorCategory"></span>
+                    <div class="relative">
+                        <select name="category_id" id="editProductCategorySelect"
+                            class="pl-4 pr-12 py-3 w-full text-base bg-gray-100 rounded-lg border-2 border-gray-200 focus:border-[#00B69B] focus:bg-white focus:outline-none transition appearance-none">
+                            <option value="">Pilih Kategori</option>
+                        </select>
+                        <div class="flex absolute inset-y-0 right-4 items-center pointer-events-none">
+                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </div>
+                    </div>
+                    <span class="block mt-2 text-xs text-red-500" id="editProductErrorCategory"></span>
                 </div>
-                <div class="mb-4">
+                <div class="mb-6">
                     <label class="block mb-2 text-base font-semibold">Harga Satuan</label>
-                    <input type="number" name="price" id="editProductPriceInput"
-                        class="px-4 py-3 w-full text-base bg-gray-100 rounded-lg focus:outline-none focus:ring" />
-                    <span class="text-xs text-red-500" id="editProductErrorPrice"></span>
+                    <div class="relative">
+                        <span class="absolute top-3 left-4 text-gray-500">Rp</span>
+                        <input type="text" name="price" id="editProductPriceInput" placeholder="Masukkan Harga"
+                            class="pl-12 pr-4 py-3 w-full text-base bg-gray-100 rounded-lg border-2 border-gray-200 focus:border-[#00B69B] focus:bg-white focus:outline-none transition" />
+                    </div>
+                    <span class="block mt-2 text-xs text-red-500" id="editProductErrorPrice"></span>
                 </div>
-                <div class="mb-4">
+                <div class="mb-6">
                     <label class="block mb-2 text-base font-semibold">Stok</label>
-                    <input type="number" name="stock" id="editProductStockInput"
-                        class="px-4 py-3 w-full text-base bg-gray-100 rounded-lg focus:outline-none focus:ring" />
-                    <span class="text-xs text-red-500" id="editProductErrorStock"></span>
-                </div>
-                <div class="mb-4">
-                    <label class="block mb-2 text-base font-semibold">Status</label>
-                    <select name="status" id="editProductStatusInput"
-                        class="px-4 py-3 w-full text-base bg-gray-100 rounded-lg focus:outline-none focus:ring">
-                        <option value="tersedia">Tersedia</option>
-                        <option value="habis">Habis</option>
-                    </select>
-                    <span class="text-xs text-red-500" id="editProductErrorStatus"></span>
+                    <input type="number" name="stock" id="editProductStockInput" placeholder="Masukkan Stok"
+                        class="px-4 py-3 w-full text-base bg-gray-100 rounded-lg border-2 border-gray-200 focus:border-[#00B69B] focus:bg-white focus:outline-none transition" />
+                    <span class="block mt-2 text-xs text-red-500" id="editProductErrorStock"></span>
                 </div>
                 <button type="submit" id="editProductSubmitBtn"
-                    class="flex gap-2 justify-center items-center py-3 w-full text-lg font-bold text-white rounded-xl transition disabled:opacity-60 disabled:cursor-not-allowed"
+                    class="flex gap-2 justify-center items-center py-3 w-full text-lg font-bold text-white rounded-xl shadow-lg transition disabled:opacity-60 disabled:cursor-not-allowed"
                     style="background-color: #00B69B;"
                     onmouseover="this.style.backgroundColor='#00997F'" onmouseout="this.style.backgroundColor='#00B69B'">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                     </svg>
                     <span id="editProductSubmitText">Simpan Perubahan</span>
@@ -235,48 +264,51 @@
                 </button>
                 <div class="p-8">
                     <h3 class="mb-2 text-2xl font-bold text-gray-900">Hapus Produk?</h3>
-                    <p class="mb-8 text-gray-500">Menghapus produk akan menghilangkannya dari etalase toko Anda. Yakin ingin melanjutkan?</p>
+                    <p class="mb-8 text-gray-500">Menghapus produk akan menghilangkannya dari daftar produk. Apakah Anda yakin ingin melanjutkan?</p>
                     <div class="flex gap-4 justify-center">
-                        <button type="button" onclick="DeleteHandler.hideModal()" class="px-8 py-2 font-semibold text-gray-800 bg-white rounded-lg border border-gray-400 transition hover:bg-gray-50">Tidak Jadi</button>
-                        <button type="button" onclick="DeleteHandler.delete()" class="px-8 py-2 font-semibold text-white bg-red-400 rounded-lg transition hover:bg-red-500">Iya, Hapus</button>
+                        <button type="button" onclick="DeleteHandler.hideModal()" class="px-8 py-2 font-semibold text-gray-800 bg-white rounded-lg border border-gray-400 transition hover:bg-gray-50">Batal</button>
+                        <button type="button" onclick="DeleteHandler.delete()" class="px-8 py-2 font-semibold text-white bg-red-400 rounded-lg transition hover:bg-red-500">Ya, Hapus</button>
                     </div>
                 </div>
             </div>
         </div>
         <!-- Modal Tambah Kategori -->
-        <div id="addCategoryModal"
-            class="flex hidden fixed inset-0 z-50 justify-center items-center backdrop-blur bg-white/30">
-            <form id="addCategoryForm" class="relative p-8 w-full max-w-md bg-white rounded-2xl shadow-xl">
-                <button type="button"
-                    class="flex absolute top-4 right-4 justify-center items-center w-8 h-8 text-gray-500 rounded-full hover:bg-gray-200 close-modal"
-                    aria-label="Tutup">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor">
+        <div id="addCategoryModal" class="flex hidden fixed inset-0 z-50 justify-center items-center bg-black/30">
+            <form id="addCategoryForm" class="relative p-10 w-full max-w-md bg-white rounded-2xl shadow-2xl">
+                <button type="button" class="flex absolute top-6 right-6 justify-center items-center w-10 h-10 text-gray-400 rounded-full transition hover:text-gray-600 hover:bg-gray-100 close-modal" aria-label="Tutup">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
-                <h3 class="mb-6 text-2xl font-bold">Tambah Kategori</h3>
-                <div class="mb-4">
+                <h3 class="mb-2 text-3xl font-bold text-gray-900">Tambah Kategori</h3>
+                <p class="mb-8 text-gray-500">Isi detail kategori di bawah ini.</p>
+                <div class="mb-6">
                     <label class="block mb-2 text-base font-semibold">Nama Kategori</label>
-                    <input type="text" name="name" id="addCategoryNameInput" placeholder="Masukkan Nama"
-                        class="px-4 py-3 w-full text-base bg-gray-100 rounded-lg focus:outline-none focus:ring" />
-                    <span class="text-xs text-red-500" id="addCategoryErrorName"></span>
+                    <input type="text" name="name" id="addCategoryNameInput" placeholder="Masukkan Nama Kategori"
+                        class="px-4 py-3 w-full text-base bg-gray-100 rounded-lg border-2 border-gray-200 focus:border-[#00B69B] focus:bg-white focus:outline-none transition" />
+                    <span class="block mt-2 text-xs text-red-500" id="addCategoryErrorName"></span>
                 </div>
                 <div class="mb-8">
                     <label class="block mb-2 text-base font-semibold">Status</label>
-                    <select name="status" id="addCategoryStatusInput"
-                        class="px-4 py-3 w-full text-base bg-gray-100 rounded-lg focus:outline-none focus:ring">
-                        <option value="aktif">Aktif</option>
-                        <option value="nonaktif">Nonaktif</option>
-                    </select>
-                    <span class="text-xs text-red-500" id="addCategoryErrorStatus"></span>
+                    <div class="relative">
+                        <select name="status" id="addCategoryStatusInput"
+                            class="pl-4 pr-12 py-3 w-full text-base bg-gray-100 rounded-lg border-2 border-gray-200 focus:border-[#00B69B] focus:bg-white focus:outline-none transition appearance-none">
+                            <option value="aktif">Aktif</option>
+                            <option value="nonaktif">Nonaktif</option>
+                        </select>
+                        <div class="flex absolute inset-y-0 right-4 items-center pointer-events-none">
+                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </div>
+                    </div>
+                    <span class="block mt-2 text-xs text-red-500" id="addCategoryErrorStatus"></span>
                 </div>
                 <button type="submit" id="addCategorySubmitBtn"
-                    class="flex gap-2 justify-center items-center py-3 w-full text-lg font-bold text-white rounded-xl transition disabled:opacity-60 disabled:cursor-not-allowed"
+                    class="flex gap-2 justify-center items-center py-3 w-full text-lg font-bold text-white rounded-xl shadow-lg transition disabled:opacity-60 disabled:cursor-not-allowed"
                     style="background-color: #00B69B;"
                     onmouseover="this.style.backgroundColor='#00997F'" onmouseout="this.style.backgroundColor='#00B69B'">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                     </svg>
                     <span id="addCategorySubmitText">Tambahkan</span>
@@ -284,44 +316,33 @@
             </form>
         </div>
         <!-- Modal Konfirmasi Hapus Kategori -->
-        <div id="deleteCategoryModal"
-            class="flex hidden fixed inset-0 z-50 justify-center items-center backdrop-blur bg-white/30">
-            <div class="relative p-8 w-full max-w-md bg-white rounded-2xl shadow-xl">
-                <button type="button"
-                    class="flex absolute top-4 right-4 justify-center items-center w-8 h-8 text-gray-500 rounded-full hover:bg-gray-200 close-modal"
-                    aria-label="Tutup">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor">
+        <div id="deleteCategoryModal" class="flex hidden fixed inset-0 z-50 justify-center items-center bg-black/30">
+            <div class="relative mx-4 w-full max-w-md bg-white rounded-2xl shadow-2xl">
+                <button type="button" onclick="closeModal('deleteCategoryModal')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
-                <h3 class="mb-6 text-2xl font-bold">Hapus Kategori</h3>
-                <p class="mb-6">Yakin ingin menghapus kategori ini?</p>
-                <div class="flex gap-2 justify-end">
-                    <button type="button" class="px-4 py-2 bg-gray-200 rounded close-modal">Batal</button>
-                    <button type="button" id="confirmDeleteCategoryBtn"
-                        class="flex gap-2 items-center px-4 py-2 text-white bg-red-500 rounded">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                        Hapus
-                    </button>
+                <div class="p-8">
+                    <h3 class="mb-2 text-2xl font-bold text-gray-900">Hapus Kategori?</h3>
+                    <p class="mb-8 text-gray-500">Menghapus kategori akan menghilangkannya dari daftar kategori. Apakah Anda yakin ingin melanjutkan?</p>
+                    <div class="flex gap-4 justify-center">
+                        <button type="button" onclick="closeModal('deleteCategoryModal')" class="px-8 py-2 font-semibold text-gray-800 bg-white rounded-lg border border-gray-400 transition hover:bg-gray-50">Batal</button>
+                        <button type="button" id="confirmDeleteCategoryBtn" class="px-8 py-2 font-semibold text-white bg-red-400 rounded-lg transition hover:bg-red-500">Ya, Hapus</button>
+                    </div>
                 </div>
             </div>
         </div>
-        <!-- Modal dan script tetap -->
-    </div>
-    <!-- Add this right after the opening body tag -->
-    <div id="toast" class="hidden fixed top-4 right-4 z-50">
-        <div class="flex items-center p-4 mb-4 text-white rounded-lg shadow-lg transition-all duration-300 transform translate-x-full">
-            <div class="inline-flex flex-shrink-0 justify-center items-center w-8 h-8 rounded-lg">
-                <svg id="toast-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                </svg>
+        <!-- Toast notifications -->
+        <div id="toast" class="hidden fixed top-4 right-4 z-50">
+            <div class="flex items-center p-4 mb-4 text-white rounded-lg shadow-lg transition-all duration-300 transform translate-x-full">
+                <div class="inline-flex flex-shrink-0 justify-center items-center w-8 h-8 rounded-lg">
+                    <svg id="toast-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                </div>
+                <div id="toast-message" class="ml-3 text-sm font-normal"></div>
             </div>
-            <div id="toast-message" class="ml-3 text-sm font-normal"></div>
         </div>
     </div>
 @endsection
@@ -478,12 +499,25 @@
         })) !!};
 
         let filteredProducts = [...products];
+        let filteredCategories = [...categories];
         let selectedProductId = null;
         let selectedCategoryId = null;
 
         // --- Render functions ---
         function formatRupiah(angka) {
-            return 'Rp.' + angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+            if (!angka) return '';
+            angka = angka.toString().replace(/[^0-9]/g, '');
+            return angka.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        }
+
+        function unformatRupiah(angka) {
+            if (!angka) return '';
+            return angka.toString().replace(/[^0-9]/g, '');
+        }
+
+        function formatRupiahDisplay(angka) {
+            if (!angka) return 'Rp 0';
+            return 'Rp ' + formatRupiah(angka);
         }
 
         function renderCategoryOptions(selectId, selectedId = null) {
@@ -491,7 +525,7 @@
             if (!select) return;
 
             select.innerHTML = '<option value="">Pilih Kategori</option>';
-            categories.forEach(cat => {
+            filteredCategories.forEach(cat => {
                 if (cat.status === 'aktif') { // Only show active categories
                     const option = document.createElement('option');
                     option.value = cat.id;
@@ -531,7 +565,7 @@
             </td>
             <td class="px-4 py-2">${product.category ? product.category.name : '-'}</td>
             <td class="px-4 py-2">${product.stock}</td>
-            <td class="px-4 py-2">${formatRupiah(product.price)}</td>
+            <td class="px-4 py-2">${formatRupiahDisplay(product.price)}</td>
             <td class="px-4 py-2">
                 <span class="px-3 py-1 rounded text-xs font-semibold ${statusClass}">
                     ${statusLabel}
@@ -579,7 +613,7 @@
             if (!tbody) return;
 
             tbody.innerHTML = '';
-            categories.forEach((category, idx) => {
+            filteredCategories.forEach((category, idx) => {
                 const tr = document.createElement('tr');
                 tr.className = idx % 2 === 0 ? 'bg-white' : 'bg-gray-50';
                 tr.innerHTML = `
@@ -592,7 +626,9 @@
             </td>
             <td class="flex px-4 py-2 space-x-2">
                 <button class="text-red-500 hover:text-red-700 delete-category-btn" data-id="${category.id}">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
                 </button>
             </td>
         `;
@@ -608,15 +644,38 @@
         }
 
         // --- Search ---
-        const searchInput = document.getElementById('searchProductInput');
-        if (searchInput) {
-            searchInput.addEventListener('input', function() {
-                const q = this.value.toLowerCase();
-                filteredProducts = products.filter(p =>
-                    p.name.toLowerCase().includes(q) ||
-                    (p.category && p.category.name.toLowerCase().includes(q))
-                );
-                renderProductsTable();
+        function filterProducts(query) {
+            query = query.toLowerCase();
+            filteredProducts = products.filter(product => 
+                product.name.toLowerCase().includes(query) ||
+                (product.category && product.category.name.toLowerCase().includes(query)) ||
+                product.price.toString().includes(query) ||
+                product.stock.toString().includes(query)
+            );
+            renderProductsTable();
+        }
+
+        function filterCategories(query) {
+            query = query.toLowerCase();
+            filteredCategories = categories.filter(category =>
+                category.name.toLowerCase().includes(query) ||
+                category.status.toLowerCase().includes(query)
+            );
+            renderCategoriesTable();
+        }
+
+        // Add search event listeners
+        const searchProductInput = document.getElementById('searchProductInput');
+        if (searchProductInput) {
+            searchProductInput.addEventListener('input', function() {
+                filterProducts(this.value);
+            });
+        }
+
+        const searchCategoryInput = document.getElementById('searchCategoryInput');
+        if (searchCategoryInput) {
+            searchCategoryInput.addEventListener('input', function() {
+                filterCategories(this.value);
             });
         }
 
@@ -662,10 +721,31 @@
         // --- Validasi real-time ---
         function validateAddProductField(name, value) {
             let error = '';
-            if (name === 'name' && !value.trim()) error = 'Nama produk wajib diisi';
-            if (name === 'category_id' && !value) error = 'Kategori wajib dipilih';
-            if (name === 'price' && (!value || value <= 0)) error = 'Harga harus diisi dan lebih dari 0';
-            if (name === 'stock' && (!value || value < 0)) error = 'Stok harus diisi dan minimal 0';
+            if (name === 'name') {
+                if (!value.trim()) {
+                    error = 'Nama produk wajib diisi';
+                } else if (value.length < 3) {
+                    error = 'Nama produk minimal 3 karakter';
+                }
+            }
+            if (name === 'category_id' && !value) {
+                error = 'Kategori wajib dipilih';
+            }
+            if (name === 'price') {
+                const numericValue = unformatRupiah(value);
+                if (!numericValue) {
+                    error = 'Harga wajib diisi';
+                } else if (isNaN(numericValue) || parseInt(numericValue) <= 0) {
+                    error = 'Harga harus berupa angka positif';
+                }
+            }
+            if (name === 'stock') {
+                if (!value && value !== 0) {
+                    error = 'Stok wajib diisi';
+                } else if (isNaN(value) || value < 0) {
+                    error = 'Stok harus berupa angka positif';
+                }
+            }
             const errEl = document.getElementById('addProductError' + name.charAt(0).toUpperCase() + name.slice(1));
             if (errEl) errEl.textContent = error;
             return !error;
@@ -692,12 +772,18 @@
             if (addProductForm) {
                 addProductForm.addEventListener('submit', async function(e) {
                     e.preventDefault();
-
-                    // Clear previous errors
                     clearAddProductErrors();
 
                     // Get form data
                     const formData = new FormData(this);
+
+                    // Convert formatted price to integer value
+                    const priceInput = document.getElementById('addProductPriceInput');
+                    if (priceInput) {
+                        const intPrice = parseInt(unformatRupiah(priceInput.value) || '0', 10);
+                        formData.set('price', intPrice);
+                        console.log('Harga yang dikirim (add):', formData.get('price'), typeof formData.get('price'));
+                    }
 
                     // Validasi manual sebelum submit
                     let valid = true;
@@ -785,6 +871,10 @@
                         const formData = new FormData(this);
                         const res = await fetch('/staff/categories', {
                             method: 'POST',
+                            headers: {
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                            },
                             body: formData
                         });
 
@@ -793,12 +883,12 @@
                         if (!res.ok) {
                             if (data.errors) {
                                 Object.entries(data.errors).forEach(([key, val]) => {
-                                    const errEl = document.getElementById('addCategoryError' +
+                                    const errEl = document.getElementById('addCategoryError' + 
                                         key.charAt(0).toUpperCase() + key.slice(1));
                                     if (errEl) errEl.textContent = val[0];
                                 });
                             } else {
-                                alert('Gagal menambah kategori');
+                                Toast.show('Gagal menambah kategori: ' + (data.message || 'Unknown error'), 'error');
                             }
                             btn.disabled = false;
                             text.textContent = 'Tambahkan';
@@ -807,6 +897,7 @@
 
                         // Tambahkan kategori baru ke array dan render ulang
                         categories.push(data.category);
+                        filteredCategories = [...categories];
                         renderCategoriesTable();
                         renderCategoryOptions('addProductCategorySelect');
                         renderCategoryOptions('editProductCategorySelect');
@@ -814,9 +905,10 @@
                         // Reset form dan tutup modal
                         this.reset();
                         closeModal('addCategoryModal');
+                        Toast.show('Kategori berhasil ditambahkan', 'success');
 
                     } catch (err) {
-                        alert('Gagal menambah kategori');
+                        Toast.show('Gagal menambah kategori: ' + err.message, 'error');
                     }
 
                     btn.disabled = false;
@@ -878,39 +970,169 @@
             }
 
             // Edit Product Modal & AJAX
-            function openEditProductModal(id) {
+            window.openEditProductModal = function(id) {
                 const product = products.find(p => p.id == id);
                 if (!product) return;
                 selectedProductId = id;
                 const form = document.getElementById('editProductForm');
                 if (!form) return;
+                
+                // Clear previous errors
+                clearEditProductErrors();
+                
+                // Set form values
                 form.elements['id'].value = product.id;
                 form.elements['name'].value = product.name;
                 renderCategoryOptions('editProductCategorySelect', product.category_id);
-                form.elements['price'].value = product.price;
+                form.elements['price'].value = formatRupiah(product.price);
                 form.elements['stock'].value = product.stock;
-                form.elements['status'].value = product.status;
-                clearEditProductErrors();
+                
+                // Set image preview
+                const preview = document.getElementById('editProductImagePreview');
+                const placeholder = document.getElementById('editProductImagePlaceholder');
+                if (product.image_url) {
+                    preview.src = product.image_url;
+                    preview.classList.remove('hidden');
+                    placeholder.classList.add('hidden');
+                } else {
+                    preview.classList.add('hidden');
+                    placeholder.classList.remove('hidden');
+                }
+                
+                // Show modal
                 const modal = document.getElementById('editProductModal');
                 if (modal) modal.classList.remove('hidden');
-            }
+            };
 
             function clearEditProductErrors() {
-                ['Name', 'Category', 'Price', 'Stock', 'Status'].forEach(field => {
+                ['Name', 'Category', 'Price', 'Stock', 'Image'].forEach(field => {
                     const errEl = document.getElementById('editProductError' + field);
                     if (errEl) errEl.textContent = '';
                 });
             }
 
+            function validateEditProductField(name, value) {
+                let error = '';
+                if (name === 'name') {
+                    if (!value.trim()) {
+                        error = 'Nama produk wajib diisi';
+                    } else if (value.length < 3) {
+                        error = 'Nama produk minimal 3 karakter';
+                    }
+                }
+                if (name === 'category_id' && !value) {
+                    error = 'Kategori wajib dipilih';
+                }
+                if (name === 'price') {
+                    const numericValue = unformatRupiah(value);
+                    if (!numericValue) {
+                        error = 'Harga wajib diisi';
+                    } else if (isNaN(numericValue) || parseInt(numericValue) <= 0) {
+                        error = 'Harga harus berupa angka positif';
+                    }
+                }
+                if (name === 'stock') {
+                    if (!value && value !== 0) {
+                        error = 'Stok wajib diisi';
+                    } else if (isNaN(value) || value < 0) {
+                        error = 'Stok harus berupa angka positif';
+                    }
+                }
+                const errEl = document.getElementById('editProductError' + name.charAt(0).toUpperCase() + name.slice(1));
+                if (errEl) errEl.textContent = error;
+                return !error;
+            }
+
             const editProductForm = document.getElementById('editProductForm');
             if (editProductForm) {
+                // Add image preview functionality
+                const imageInput = document.getElementById('editProductImageInput');
+                if (imageInput) {
+                    imageInput.addEventListener('change', function(e) {
+                        const file = e.target.files[0];
+                        const preview = document.getElementById('editProductImagePreview');
+                        const placeholder = document.getElementById('editProductImagePlaceholder');
+                        
+                        if (file) {
+                            // Validate file type
+                            if (!file.type.startsWith('image/')) {
+                                const errEl = document.getElementById('editProductErrorImage');
+                                if (errEl) errEl.textContent = 'File harus berupa gambar';
+                                this.value = '';
+                                return;
+                            }
+                            
+                            // Validate file size (max 2MB)
+                            if (file.size > 2 * 1024 * 1024) {
+                                const errEl = document.getElementById('editProductErrorImage');
+                                if (errEl) errEl.textContent = 'Ukuran file maksimal 2MB';
+                                this.value = '';
+                                return;
+                            }
+                            
+                            const reader = new FileReader();
+                            reader.onload = function(ev) {
+                                preview.src = ev.target.result;
+                                preview.classList.remove('hidden');
+                                placeholder.classList.add('hidden');
+                            };
+                            reader.readAsDataURL(file);
+                        } else {
+                            preview.classList.add('hidden');
+                            placeholder.classList.remove('hidden');
+                        }
+                    });
+                }
+
+                // Add input validation on change
+                ['name', 'price', 'stock'].forEach(fieldName => {
+                    const input = editProductForm.querySelector(`[name="${fieldName}"]`);
+                    if (input) {
+                        input.addEventListener('input', function() {
+                            validateEditProductField(fieldName, this.value);
+                        });
+                    }
+                });
+
+                // Add select validation on change
+                const categorySelect = editProductForm.querySelector('[name="category_id"]');
+                if (categorySelect) {
+                    categorySelect.addEventListener('change', function() {
+                        validateEditProductField('category_id', this.value);
+                    });
+                }
+
                 editProductForm.addEventListener('submit', async function(e) {
                     e.preventDefault();
                     clearEditProductErrors();
+                    
+                    // Validate form
+                    let valid = true;
+                    ['name', 'category_id', 'price', 'stock'].forEach(name => {
+                        const el = document.querySelector(`#editProductForm [name="${name}"]`);
+                        if (!validateEditProductField(name, el.value)) valid = false;
+                    });
+                    
+                    if (!valid) return false;
+
                     const form = e.target;
                     const id = form.elements['id'].value;
                     const formData = new FormData(form);
                     formData.append('_method', 'PUT');
+                    
+                    // Convert formatted price to integer value
+                    const priceInput = document.getElementById('editProductPriceInput');
+                    if (priceInput) {
+                        const intPrice = parseInt(unformatRupiah(priceInput.value) || '0', 10);
+                        formData.set('price', intPrice);
+                    }
+                    
+                    // Set status based on stock
+                    const stockInput = form.elements['stock'];
+                    if (stockInput) {
+                        formData.set('status', parseInt(stockInput.value) > 0 ? 'tersedia' : 'habis');
+                    }
+                    
                     const btn = document.getElementById('editProductSubmitBtn');
                     const text = document.getElementById('editProductSubmitText');
                     btn.disabled = true;
@@ -919,33 +1141,102 @@
                     try {
                         const res = await fetch(`/staff/products/${id}`, {
                             method: 'POST',
+                            headers: {
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                            },
                             body: formData
                         });
+                        
                         const data = await res.json();
+                        
                         if (!res.ok) {
                             if (data.errors) {
                                 Object.entries(data.errors).forEach(([key, val]) => {
-                                    const errEl = document.getElementById('editProductError' +
+                                    const errEl = document.getElementById('editProductError' + 
                                         key.charAt(0).toUpperCase() + key.slice(1));
                                     if (errEl) errEl.textContent = val[0];
                                 });
-                            } else alert('Gagal mengedit produk.');
+                            } else {
+                                Toast.show('Gagal mengedit produk: ' + (data.message || 'Unknown error'), 'error');
+                            }
                             btn.disabled = false;
                             text.textContent = 'Simpan Perubahan';
                             return;
                         }
+
                         // Update product in products array
                         const idx = products.findIndex(p => p.id == data.product.id);
                         if (idx !== -1) products[idx] = data.product;
                         filteredProducts = [...products];
                         renderProductsTable();
                         closeModal('editProductModal');
-                        alert('Produk berhasil diperbarui');
+                        Toast.show('Produk berhasil diperbarui', 'success');
                     } catch (err) {
-                        alert('Gagal mengedit produk.');
+                        Toast.show('Gagal mengedit produk: ' + err.message, 'error');
                     }
+                    
                     btn.disabled = false;
                     text.textContent = 'Simpan Perubahan';
+                });
+            }
+
+            // Delete Category Modal & AJAX
+            window.openDeleteCategoryModal = function(id) {
+                const category = categories.find(c => c.id == id);
+                if (!category) return;
+                selectedCategoryId = id;
+                const modal = document.getElementById('deleteCategoryModal');
+                if (modal) modal.classList.remove('hidden');
+            };
+
+            const confirmDeleteCategoryBtn = document.getElementById('confirmDeleteCategoryBtn');
+            if (confirmDeleteCategoryBtn) {
+                confirmDeleteCategoryBtn.addEventListener('click', async function() {
+                    if (!selectedCategoryId) return;
+                    
+                    const btn = this;
+                    const originalText = btn.innerHTML;
+                    btn.disabled = true;
+                    btn.innerHTML = `
+                        <svg class="inline-block mr-3 -ml-1 w-5 h-5 text-white animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Menghapus...
+                    `;
+
+                    try {
+                        const res = await fetch(`/staff/categories/${selectedCategoryId}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                            }
+                        });
+
+                        const data = await res.json();
+
+                        if (!res.ok) {
+                            throw new Error(data.message || 'Failed to delete category');
+                        }
+
+                        // Remove category from array
+                        categories = categories.filter(c => c.id != selectedCategoryId);
+                        filteredCategories = [...categories];
+                        renderCategoriesTable();
+                        renderCategoryOptions('addProductCategorySelect');
+                        renderCategoryOptions('editProductCategorySelect');
+
+                        closeModal('deleteCategoryModal');
+                        Toast.show('Kategori berhasil dihapus', 'success');
+
+                    } catch (err) {
+                        Toast.show('Gagal menghapus kategori: ' + err.message, 'error');
+                    }
+
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
                 });
             }
 
@@ -954,6 +1245,36 @@
             renderCategoriesTable();
             renderCategoryOptions('addProductCategorySelect');
             renderCategoryOptions('editProductCategorySelect');
+
+            // Add price formatting for add product form
+            const addProductPriceInput = document.getElementById('addProductPriceInput');
+            if (addProductPriceInput) {
+                addProductPriceInput.addEventListener('input', function(e) {
+                    const value = unformatRupiah(e.target.value);
+                    const formatted = formatRupiah(value);
+                    e.target.value = formatted;
+                    validateAddProductField('price', value);
+                });
+                // Format initial value if exists
+                if (addProductPriceInput.value) {
+                    addProductPriceInput.value = formatRupiah(addProductPriceInput.value);
+                }
+            }
+
+            // Add price formatting for edit product form
+            const editProductPriceInput = document.getElementById('editProductPriceInput');
+            if (editProductPriceInput) {
+                editProductPriceInput.addEventListener('input', function(e) {
+                    const value = unformatRupiah(e.target.value);
+                    const formatted = formatRupiah(value);
+                    e.target.value = formatted;
+                    validateEditProductField('price', value);
+                });
+                // Format initial value if exists
+                if (editProductPriceInput.value) {
+                    editProductPriceInput.value = formatRupiah(editProductPriceInput.value);
+                }
+            }
         });
     </script>
 @endpush
