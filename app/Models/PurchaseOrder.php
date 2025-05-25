@@ -10,7 +10,7 @@ class PurchaseOrder extends Model
     use HasFactory;
 
     protected $fillable = [
-        'date', 'notes'
+        'date', 'notes', 'status'
     ];
 
     public function items()

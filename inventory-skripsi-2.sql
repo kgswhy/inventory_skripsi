@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:8889
--- Generation Time: May 23, 2025 at 06:10 PM
+-- Generation Time: May 25, 2025 at 05:26 AM
 -- Server version: 8.0.40
 -- PHP Version: 8.3.14
 
@@ -64,7 +64,7 @@ CREATE TABLE `categories` (
 --
 
 INSERT INTO `categories` (`id`, `name`, `status`, `created_at`, `updated_at`) VALUES
-(1, 'sepatu', 'aktif', NULL, NULL);
+(1, 'sepatu', 'aktif', '2025-05-23 22:25:43', '2025-05-23 22:25:43');
 
 -- --------------------------------------------------------
 
@@ -134,14 +134,61 @@ CREATE TABLE `migrations` (
 --
 
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
-(1, '0001_01_01_000001_create_cache_table', 1),
-(2, '0001_01_01_000002_create_jobs_table', 1),
-(3, '2024_03_19_000000_create_users_table', 1),
-(4, '2025_05_19_114128_create_sessions_table', 1),
-(5, '2025_05_20_131600_create_categories_table', 1),
-(6, '2025_05_20_131703_create_products_table', 1),
-(7, '2025_05_20_131809_create_purchase_orders_table', 1),
-(8, '2025_05_20_131905_create_purchase_order_items_table', 1);
+(10, '0001_01_01_000001_create_cache_table', 1),
+(11, '0001_01_01_000002_create_jobs_table', 1),
+(12, '2024_03_19_000000_create_users_table', 1),
+(13, '2025_05_19_114128_create_sessions_table', 1),
+(14, '2025_05_20_131600_create_categories_table', 1),
+(15, '2025_05_20_131703_create_products_table', 1),
+(16, '2025_05_20_131809_create_purchase_orders_table', 1),
+(17, '2025_05_20_131905_create_purchase_order_items_table', 1),
+(18, '2025_05_25_051337_create_permission_tables', 2);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `model_has_permissions`
+--
+
+CREATE TABLE `model_has_permissions` (
+  `permission_id` bigint UNSIGNED NOT NULL,
+  `model_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `model_id` bigint UNSIGNED NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `model_has_roles`
+--
+
+CREATE TABLE `model_has_roles` (
+  `role_id` bigint UNSIGNED NOT NULL,
+  `model_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `model_id` bigint UNSIGNED NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `model_has_roles`
+--
+
+INSERT INTO `model_has_roles` (`role_id`, `model_type`, `model_id`) VALUES
+(1, 'App\\Models\\User', 1),
+(1, 'App\\Models\\User', 2);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `permissions`
+--
+
+CREATE TABLE `permissions` (
+  `id` bigint UNSIGNED NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `guard_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -153,6 +200,7 @@ CREATE TABLE `products` (
   `id` bigint UNSIGNED NOT NULL,
   `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `image` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `sku` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `category_id` bigint UNSIGNED NOT NULL,
   `stock` int NOT NULL DEFAULT '0',
   `price` int NOT NULL DEFAULT '0',
@@ -160,6 +208,15 @@ CREATE TABLE `products` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `products`
+--
+
+INSERT INTO `products` (`id`, `name`, `image`, `sku`, `category_id`, `stock`, `price`, `status`, `created_at`, `updated_at`) VALUES
+(1, 'testt', 'products/ilyhLaCJPfBWfb22HN395UXQjHM2RnhRYazEuofj.png', NULL, 1, 0, 1000000, 'tersedia', '2025-05-23 22:25:55', '2025-05-23 23:04:58'),
+(2, 'sepatu', 'products/D5BiLTVVHWnY3RSgHqjetsmbNjqQmCHJEuCG1MGy.png', NULL, 1, 10, 100000, 'tersedia', '2025-05-23 23:04:11', '2025-05-23 23:09:44'),
+(3, 'test', 'products/KORrZeooHV2VGYihNTbtDJsMlhzilXm0YAA5S1XF.png', NULL, 1, 0, 123123, 'tersedia', '2025-05-23 23:04:25', '2025-05-24 22:05:37');
 
 -- --------------------------------------------------------
 
@@ -175,6 +232,16 @@ CREATE TABLE `purchase_orders` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `purchase_orders`
+--
+
+INSERT INTO `purchase_orders` (`id`, `date`, `notes`, `created_at`, `updated_at`) VALUES
+(1, '2025-05-24', 'test', '2025-05-23 23:03:45', '2025-05-23 23:03:45'),
+(2, '2025-05-24', 'ihiy', '2025-05-23 23:04:58', '2025-05-23 23:04:58'),
+(3, '2025-06-11', NULL, '2025-05-23 23:09:44', '2025-05-23 23:09:44'),
+(4, '2025-05-25', NULL, '2025-05-24 22:05:37', '2025-05-24 22:05:37');
+
 -- --------------------------------------------------------
 
 --
@@ -184,12 +251,56 @@ CREATE TABLE `purchase_orders` (
 CREATE TABLE `purchase_order_items` (
   `id` bigint UNSIGNED NOT NULL,
   `purchase_order_id` bigint UNSIGNED NOT NULL,
-  `product_id` bigint UNSIGNED NOT NULL,
-  `qty` int NOT NULL,
+  `product_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `category_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `price` int NOT NULL,
+  `stock` int NOT NULL,
   `total` int NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `purchase_order_items`
+--
+
+INSERT INTO `purchase_order_items` (`id`, `purchase_order_id`, `product_name`, `category_name`, `price`, `stock`, `total`, `created_at`, `updated_at`) VALUES
+(1, 1, 'testt', 'sepatu', 1000000, 1, 1000000, '2025-05-23 23:03:45', '2025-05-23 23:03:45'),
+(2, 2, 'sepatu', 'sepatu', 100000, 2, 200000, '2025-05-23 23:04:58', '2025-05-23 23:04:58'),
+(3, 2, 'testt', 'sepatu', 1000000, 1, 1000000, '2025-05-23 23:04:58', '2025-05-23 23:04:58'),
+(4, 3, 'sepatu', 'sepatu', 100000, 11, 1100000, '2025-05-23 23:09:44', '2025-05-23 23:09:44'),
+(5, 4, 'test', 'sepatu', 123123, 12, 1477476, '2025-05-24 22:05:37', '2025-05-24 22:05:37');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `roles`
+--
+
+CREATE TABLE `roles` (
+  `id` bigint UNSIGNED NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `guard_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `roles`
+--
+
+INSERT INTO `roles` (`id`, `name`, `guard_name`, `created_at`, `updated_at`) VALUES
+(1, 'staff', 'web', '2025-05-24 22:14:10', '2025-05-24 22:14:10');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `role_has_permissions`
+--
+
+CREATE TABLE `role_has_permissions` (
+  `permission_id` bigint UNSIGNED NOT NULL,
+  `role_id` bigint UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -212,7 +323,7 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('Q6JThSEZYuhQAaP94xSEAbg5JB1Z18DvY3NdPKZe', 2, '127.0.0.1', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Safari/605.1.15', 'YTo1OntzOjY6Il90b2tlbiI7czo0MDoiOTA3VnhyNWNXYmJCMlV6U3BmWjJmVU1hSHpRSlFjbWJqMjFMM1Z0QyI7czozOiJ1cmwiO2E6MTp7czo4OiJpbnRlbmRlZCI7czozNjoiaHR0cDovLzEyNy4wLjAuMTo4MDAwL3N0YWZmL3Byb2R1Y3RzIjt9czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MTYxOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvc3RhZmYvcHJvZHVjdHM/Y2F0ZWdvcnlfaWQ9JmltYWdlPU1vZGFsJTIwS29uZmlybWFzaSUyMEhhcHVzJTIwS2F0ZWdvcmkucG5nJm5hbWU9dGVzdCZwcmljZT0xJnNrdT1TS1UtMTc0ODAyMzgwNTk2MiZzdGF0dXM9dGVyc2VkaWEmc3RvY2s9MSI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjI7fQ==', 1748023806);
+('NzrHT6DHjxHf4AFxPE3EEW96K9REuyEmw8izOZ0Q', 2, '127.0.0.1', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Safari/605.1.15', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiSUtmM3czSm9GbkJDYmJzb2hnaHBuekJhN09odlZaVXhVcDBXU3hMTSI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6Mzc6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9zdGFmZi9kYXNoYm9hcmQiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aToyO30=', 1748150750);
 
 -- --------------------------------------------------------
 
@@ -240,8 +351,8 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `username`, `email`, `phone`, `birth_date`, `address`, `password`, `role`, `remember_token`, `created_at`, `updated_at`) VALUES
-(1, 'Admin', 'admin', 'admin@example.com', '081234567890', '2000-01-01', 'Jl. Admin', '$2y$12$WaZYw03XRZ7VWq2vULi7fugqlkrCcRq9YZg/vkH1xAXBso.g3uChC', 'admin', NULL, '2025-05-23 10:38:10', '2025-05-23 10:38:10'),
-(2, 'John Doe', 'johndoe', 'john@example.com', '081234567891', '2000-01-01', 'Jl. Staff', '$2y$12$MzNttzf33D68uHf6tbClr.SFs2ja156ZbxHduz6iqvckPqwmFo8nm', 'staff', NULL, '2025-05-23 10:38:11', '2025-05-23 10:38:11');
+(1, 'Admin', 'admin', 'admin@example.com', '081234567890', '2000-01-01', 'Jl. Admin', '$2y$12$R4VIWU8RM9Nfh4qALVMpguNFxOn9UTypWmDH83P6cSYWIQKXSo5UC', 'admin', NULL, '2025-05-23 22:25:27', '2025-05-23 22:25:27'),
+(2, 'John Doe', 'johndoe', 'john@example.com', '081234567891', '2000-01-01', 'Jl. Staff', '$2y$12$x7XFqbNt6nl1ZsitXd.EsuIJJUlD79R77MXsiAMUydaSPWKmwi0yq', 'staff', NULL, '2025-05-23 22:25:27', '2025-05-23 22:25:27');
 
 --
 -- Indexes for dumped tables
@@ -292,6 +403,27 @@ ALTER TABLE `migrations`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `model_has_permissions`
+--
+ALTER TABLE `model_has_permissions`
+  ADD PRIMARY KEY (`permission_id`,`model_id`,`model_type`),
+  ADD KEY `model_has_permissions_model_id_model_type_index` (`model_id`,`model_type`);
+
+--
+-- Indexes for table `model_has_roles`
+--
+ALTER TABLE `model_has_roles`
+  ADD PRIMARY KEY (`role_id`,`model_id`,`model_type`),
+  ADD KEY `model_has_roles_model_id_model_type_index` (`model_id`,`model_type`);
+
+--
+-- Indexes for table `permissions`
+--
+ALTER TABLE `permissions`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `permissions_name_guard_name_unique` (`name`,`guard_name`);
+
+--
 -- Indexes for table `products`
 --
 ALTER TABLE `products`
@@ -309,8 +441,21 @@ ALTER TABLE `purchase_orders`
 --
 ALTER TABLE `purchase_order_items`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `purchase_order_items_purchase_order_id_foreign` (`purchase_order_id`),
-  ADD KEY `purchase_order_items_product_id_foreign` (`product_id`);
+  ADD KEY `purchase_order_items_purchase_order_id_foreign` (`purchase_order_id`);
+
+--
+-- Indexes for table `roles`
+--
+ALTER TABLE `roles`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `roles_name_guard_name_unique` (`name`,`guard_name`);
+
+--
+-- Indexes for table `role_has_permissions`
+--
+ALTER TABLE `role_has_permissions`
+  ADD PRIMARY KEY (`permission_id`,`role_id`),
+  ADD KEY `role_has_permissions_role_id_foreign` (`role_id`);
 
 --
 -- Indexes for table `sessions`
@@ -354,25 +499,37 @@ ALTER TABLE `jobs`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+
+--
+-- AUTO_INCREMENT for table `permissions`
+--
+ALTER TABLE `permissions`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `purchase_orders`
 --
 ALTER TABLE `purchase_orders`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `purchase_order_items`
 --
 ALTER TABLE `purchase_order_items`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT for table `roles`
+--
+ALTER TABLE `roles`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `users`
@@ -385,6 +542,18 @@ ALTER TABLE `users`
 --
 
 --
+-- Constraints for table `model_has_permissions`
+--
+ALTER TABLE `model_has_permissions`
+  ADD CONSTRAINT `model_has_permissions_permission_id_foreign` FOREIGN KEY (`permission_id`) REFERENCES `permissions` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `model_has_roles`
+--
+ALTER TABLE `model_has_roles`
+  ADD CONSTRAINT `model_has_roles_role_id_foreign` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE CASCADE;
+
+--
 -- Constraints for table `products`
 --
 ALTER TABLE `products`
@@ -394,8 +563,14 @@ ALTER TABLE `products`
 -- Constraints for table `purchase_order_items`
 --
 ALTER TABLE `purchase_order_items`
-  ADD CONSTRAINT `purchase_order_items_product_id_foreign` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `purchase_order_items_purchase_order_id_foreign` FOREIGN KEY (`purchase_order_id`) REFERENCES `purchase_orders` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `role_has_permissions`
+--
+ALTER TABLE `role_has_permissions`
+  ADD CONSTRAINT `role_has_permissions_permission_id_foreign` FOREIGN KEY (`permission_id`) REFERENCES `permissions` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `role_has_permissions_role_id_foreign` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

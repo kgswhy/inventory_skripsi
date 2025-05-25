@@ -1,6 +1,6 @@
 @extends('layouts.staff')
 
-@section('header-title', 'PURCHASE ORDER')
+@section('header-title', 'Transaksi Pembelian')
 
 @section('content')
     <div x-data="{
@@ -36,11 +36,12 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M9 17v-2a2 2 0 012-2h2a2 2 0 012 2v2m-6 4h6a2 2 0 002-2v-5a2 2 0 00-2-2h-1V7a2 2 0 00-2-2h-2a2 2 0 00-2 2v7H7a2 2 0 00-2 2v5a2 2 0 002 2z" />
                     </svg>
-                    <h1 class="text-xl font-semibold">Pesanan Pembelian</h1>
+                    <h1 class="text-xl font-semibold">Transaksi Pembelian</h1>
                 </div>
-                <button @click="open = true" class="px-8 py-3 text-lg font-semibold text-white rounded-lg shadow transition"
+                <button type="button" @click="open = true"
+                    class="px-8 py-3 text-lg font-semibold text-white rounded-lg shadow transition"
                     style="background-color: #00B69B;" onmouseover="this.style.backgroundColor='#00997F'"
-                    onmouseout="this.style.backgroundColor='#00B69B'">+ Bikin Pesanan Pembelian</button>
+                    onmouseout="this.style.backgroundColor='#00B69B'">+ Bikin Transaksi Pembelian</button>
             </div>
             <form action="{{ route('staff.purchase-orders.index') }}" method="GET" class="flex flex-wrap gap-4 mb-6">
                 <div>
@@ -94,41 +95,50 @@
             </form>
         </div>
         <div class="p-8 bg-white rounded-xl shadow">
-            <h2 class="mb-4 text-lg font-bold">List Pesanan Pembelian</h2>
+            <h2 class="mb-4 text-lg font-bold">List Transaksi Pembelian</h2>
             <div class="overflow-x-auto">
                 <table class="min-w-full text-sm border-separate border-spacing-y-2">
                     <thead>
                         <tr class="text-xs text-gray-500 uppercase bg-gray-50">
-                            <th class="px-4 py-2">ID Item</th>
-                            <th class="px-4 py-2">Tanggal</th>
-                            <th class="px-4 py-2">Barang</th>
-                            <th class="px-4 py-2">Kategori</th>
-                            <th class="px-4 py-2">Jumlah Barang</th>
-                            <th class="px-4 py-2">Harga</th>
-                            <th class="px-4 py-2">Total Harga</th>
-                            <th class="px-4 py-2">Aksi</th>
+                            <th class="px-4 py-2 w-1/12 text-left">ID Pesanan</th>
+                            <th class="px-4 py-2 w-1/12 text-left">Tanggal</th>
+                            <th class="px-4 py-2 w-4/12 text-left">Produk</th>
+                            <th class="px-4 py-2 w-1/12 text-right">Jumlah Total Barang</th>
+                            <th class="px-4 py-2 w-2/12 text-right">Total Harga Pesanan</th>
+                            <th class="px-4 py-2 w-2/12 text-center">Aksi</th>
+                            <th class="px-4 py-2 w-1/12 text-center">Status</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y">
-                        @foreach ($orders as $order)
-                            @foreach ($order->items as $item)
-                                <tr>
-                                    <td class="px-4 py-2">#{{ $item->id }}</td>
-                                    <td class="px-4 py-2">{{ $order->date }}</td>
-                                    <td class="px-4 py-2">{{ $item->product_name }}</td>
-                                    <td class="px-4 py-2">{{ $item->category_name }}</td>
-                                    <td class="px-4 py-2">{{ $item->stock }} Barang</td>
-                                    <td class="px-4 py-2">Rp.{{ number_format($item->price, 0, ',', '.') }}</td>
-                                    <td class="px-4 py-2">Rp.{{ number_format($item->total, 0, ',', '.') }}</td>
-                                    <td class="px-4 py-2">
-                                        <button @click="showDetail({{ $order->id }})"
-                                            class="px-4 py-1 rounded-lg bg-[#00B69B] text-white font-semibold shadow transition hover:bg-[#00997F]">
-                                            Lihat Detail
-                                        </button>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        @endforeach
+                        @forelse ($orders as $order)
+                            <tr>
+                                <td class="px-4 py-2 text-left whitespace-nowrap">#{{ $order->id }}</td>
+                                <td class="px-4 py-2 text-left whitespace-nowrap">
+                                    {{ \Carbon\Carbon::parse($order->date)->format('d/m/Y') }}</td>
+                                <td class="px-4 py-2 w-4/12 text-left break-words">
+                                    {{ $order->items->pluck('product_name')->join(', ') }}
+                                </td>
+                                <td class="px-4 py-2 text-right whitespace-nowrap">{{ $order->items->sum('stock') }} Barang</td>
+                                <td class="px-4 py-2 text-right whitespace-nowrap">
+                                    Rp.{{ number_format($order->items->sum('total'), 0, ',', '.') }}</td>
+                                <td class="px-4 py-2 text-center whitespace-nowrap">
+                                    <button @click="showDetail({{ $order->id }})"
+                                        class="px-4 py-1 rounded-lg bg-[#00B69B] text-white font-semibold shadow transition hover:bg-[#00997F]">
+                                        Lihat Detail
+                                    </button>
+                                </td>
+                                <td class="px-4 py-2 text-center whitespace-nowrap">
+                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ $order->status === 'berhasil' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                        {{ ucfirst($order->status) }}
+                                    </span>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="6" class="px-4 py-2 text-center text-gray-500">Belum ada transaksi
+                                    pembelian.</td>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
@@ -149,16 +159,17 @@
 
                 <template x-if="selectedOrder">
                     <div>
-                        <h3 class="mb-6 text-2xl font-bold text-gray-900">Detail Pesanan Pembelian</h3>
+                        <h3 class="mb-6 text-2xl font-bold text-gray-900">Detail Transaksi Pembelian #<span
+                                x-text="selectedOrder.id"></span></h3>
 
-                        <div class="mb-6">
+                        <div class="pb-4 mb-6 border-b">
                             <div class="flex justify-between mb-2">
                                 <span class="text-gray-600">Tanggal:</span>
                                 <span class="font-semibold" x-text="selectedOrder.date"></span>
                             </div>
                             <div class="flex justify-between mb-2">
                                 <span class="text-gray-600">Catatan:</span>
-                                <span class="font-semibold" x-text="selectedOrder.notes || '-'"></span>
+                                <span class="font-semibold text-right" x-text="selectedOrder.notes || '-'"></span>
                             </div>
                         </div>
 
@@ -168,11 +179,11 @@
                                 <table class="min-w-full text-sm">
                                     <thead>
                                         <tr class="text-xs text-gray-500 uppercase bg-gray-50">
-                                            <th class="px-4 py-2">Barang</th>
-                                            <th class="px-4 py-2">Kategori</th>
-                                            <th class="px-4 py-2">Jumlah</th>
-                                            <th class="px-4 py-2">Harga</th>
-                                            <th class="px-4 py-2">Total</th>
+                                            <th class="px-4 py-2 text-left">Barang</th>
+                                            <th class="px-4 py-2 text-left">Kategori</th>
+                                            <th class="px-4 py-2 text-right">Jumlah</th>
+                                            <th class="px-4 py-2 text-right">Harga</th>
+                                            <th class="px-4 py-2 text-right">Total</th>
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y">
@@ -180,21 +191,30 @@
                                             <tr>
                                                 <td class="px-4 py-2" x-text="item.product_name"></td>
                                                 <td class="px-4 py-2" x-text="item.category_name"></td>
-                                                <td class="px-4 py-2" x-text="item.stock + ' Barang'"></td>
-                                                <td class="px-4 py-2"
+                                                <td class="px-4 py-2 text-right" x-text="item.stock + ' Barang'"></td>
+                                                <td class="px-4 py-2 text-right"
                                                     x-text="'Rp.' + new Intl.NumberFormat('id-ID').format(item.price)">
                                                 </td>
-                                                <td class="px-4 py-2"
+                                                <td class="px-4 py-2 text-right"
                                                     x-text="'Rp.' + new Intl.NumberFormat('id-ID').format(item.total)">
                                                 </td>
                                             </tr>
                                         </template>
                                     </tbody>
+                                    <tfoot>
+                                        <tr class="bg-gray-50">
+                                            <td colspan="4" class="px-4 py-2 font-semibold text-right">Grand Total:
+                                            </td>
+                                            <td class="px-4 py-2 font-semibold text-right"
+                                                x-text="'Rp.' + new Intl.NumberFormat('id-ID').format(selectedOrder.items.reduce((sum, item) => sum + item.total, 0))">
+                                            </td>
+                                        </tr>
+                                    </tfoot>
                                 </table>
                             </div>
                         </div>
 
-                        <div class="flex justify-end">
+                        <div class="flex justify-end mt-6">
                             <button @click="detailOpen = false"
                                 class="px-6 py-2 text-white bg-gray-500 rounded-lg transition hover:bg-gray-600">
                                 Tutup
@@ -218,8 +238,8 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
-                <h3 class="mb-2 text-3xl font-bold text-gray-900">Pesanan Pembelian</h3>
-                <p class="mb-8 text-gray-500">Isi detail pesanan pembelian di bawah ini.</p>
+                <h3 class="mb-2 text-3xl font-bold text-gray-900">Transaksi Pembelian</h3>
+                <p class="mb-8 text-gray-500">Isi detail Transaksi Pembelian di bawah ini.</p>
                 <div class="grid grid-cols-2 gap-6 mb-6">
                     <div>
                         <label class="block mb-2 text-base font-semibold">Nama Produk</label>
@@ -252,24 +272,26 @@
                 <div class="grid grid-cols-2 gap-6 mb-6">
                     <div>
                         <label class="block mb-2 text-base font-semibold">Harga Satuan</label>
-                        <input type="text" x-model="price"
-                            @input="price = price.replace(/[^0-9]/g, '').replace(/\B(?=(\d{3})+(?!\d))/g, '.')"
-                            class="px-4 py-3 w-full text-base bg-gray-100 rounded-lg border-2 border-gray-200 focus:border-[#00B69B] focus:bg-white focus:outline-none transition"
-                            placeholder="Masukkan Harga" readonly>
+                        <div class="relative">
+                            <span class="absolute top-3 left-4 text-gray-500">Rp</span>
+                            <input type="text" x-model="price"
+                                class="pl-12 pr-4 py-3 w-full text-base bg-gray-100 rounded-lg border-2 border-gray-200 focus:border-[#00B69B] focus:bg-white focus:outline-none transition"
+                                placeholder="Masukkan Harga" @input="updateTotal" readonly>
+                        </div>
                     </div>
                     <div>
                         <label class="block mb-2 text-base font-semibold">Stok (max: <span
-                                x-text="maxStock"></span>)</label>
-                        <input type="text" x-model="stock" @input="stock = stock.replace(/[^0-9]/g, '')"
+                                x-text="maxStock">0</span>)</label>
+                        <input type="number" x-model.number="stock" @input="updateTotal"
                             class="px-4 py-3 w-full text-base bg-gray-100 rounded-lg border-2 border-gray-200 focus:border-[#00B69B] focus:bg-white focus:outline-none transition"
-                            placeholder="Masukkan Stok">
+                            placeholder="Masukkan Stok" :max="maxStock">
                     </div>
                 </div>
                 <div class="mb-6">
                     <label class="block mb-2 text-base font-semibold">Total Harga</label>
-                    <input type="text" :value="total ? formatRupiah(total) : ''"
+                    <input type="text" x-model="totalItemPriceDisplay"
                         class="px-4 py-3 w-full text-base bg-gray-100 rounded-lg border-2 border-gray-200 focus:border-[#00B69B] focus:bg-white focus:outline-none transition"
-                        placeholder="" readonly>
+                        placeholder="Total Harga" readonly>
                 </div>
                 <div class="mb-6">
                     <label class="block mb-2 text-base font-semibold">Tanggal</label>
@@ -279,43 +301,45 @@
                 <div class="mb-8">
                     <label class="block mb-2 text-base font-semibold">Catatan Tambahan</label>
                     <textarea x-model="notes"
-                        class="px-4 py-3 w-full text-base bg-gray-100 rounded-lg border-2 border-gray-200 focus:border-[#00B69B] focus:bg-white focus:outline-none transition"
+                        class="px-4 py-3 w-full text-base bg-gray-100 rounded-lg border-2 border-gray-200 focus:border-[#00B69B] focus:bg-white focus:outline-none transition resize-y"
                         rows="3" placeholder="Masukkan Catatan"></textarea>
                 </div>
-                <button type="button" @click.prevent="addItem"
-                    class="flex gap-2 justify-center items-center py-3 mb-6 w-full text-lg font-bold text-white rounded-xl shadow-lg transition disabled:opacity-60 disabled:cursor-not-allowed"
+                <button type="button" @click="addItem" :disabled="!product_id || stock <= 0 || stock > maxStock"
+                    class="flex gap-2 justify-center items-center py-3 w-full text-lg font-bold text-white rounded-xl shadow-lg transition disabled:opacity-60 disabled:cursor-not-allowed"
                     style="background-color: #00B69B;" onmouseover="this.style.backgroundColor='#00997F'"
                     onmouseout="this.style.backgroundColor='#00B69B'">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                     </svg>
-                    <span>Tambahkan</span>
+                    Tambahkan
                 </button>
-                <!-- List barang yang sudah ditambahkan -->
-                <template x-for="(item, idx) in items" :key="idx">
-                    <div class="mb-4 border-2 border-[#00B69B] rounded-xl p-4 flex flex-col gap-2 relative">
-                        <button type="button" @click="removeItem(idx)"
-                            class="absolute top-2 right-2 text-red-400 hover:text-red-600">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
-                                stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
-                        <div class="flex justify-between items-center">
-                            <span class="text-lg font-semibold" x-text="item.product"></span>
-                            <span class="text-sm text-gray-500" x-text="item.category"></span>
+                <div class="overflow-y-auto mt-8 mb-6 max-h-50">
+                    <h4 class="mb-4 text-lg font-semibold">Barang yang Ditambahkan</h4>
+                    <template x-for="(item, index) in items" :key="index">
+                        <div class="flex justify-between items-center p-4 mb-2 bg-gray-100 rounded-lg">
+                            <div>
+                                <div class="font-semibold" x-text="item.product_name"></div>
+                                <div class="text-sm text-gray-600"
+                                    x-text="'Harga Satuan: ' + formatRupiahDisplay(item.price) + ', Stok: ' + item.stock">
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="font-semibold" x-text="'Total: ' + formatRupiahDisplay(item.total)"></div>
+                                <span class="text-sm text-gray-600" x-text="item.category_name"></span>
+                            </div>
+                            <button type="button" @click="removeItem(index)" class="text-red-500 hover:text-red-700">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
                         </div>
-                        <div class="flex gap-6 text-sm">
-                            <span>Harga Satuan: <span class="font-semibold"
-                                    x-text="formatRupiah(item.price)"></span></span>
-                            <span>Stok: <span class="font-semibold" x-text="item.stock"></span></span>
-                            <span>Total: <span class="font-semibold" x-text="formatRupiah(item.total)"></span></span>
-                        </div>
-                    </div>
-                </template>
-                <button type="submit"
+                    </template>
+                    <div x-show="items.length === 0" class="text-center text-gray-500">Belum ada barang ditambahkan</div>
+                </div>
+                <button type="submit" :disabled="items.length === 0"
                     class="flex gap-2 justify-center items-center py-3 w-full text-lg font-bold text-white rounded-xl shadow-lg transition disabled:opacity-60 disabled:cursor-not-allowed"
                     style="background-color: #00B69B;" onmouseover="this.style.backgroundColor='#00997F'"
                     onmouseout="this.style.backgroundColor='#00B69B'">
@@ -323,7 +347,7 @@
                         stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                     </svg>
-                    <span>Simpan Pesanan</span>
+                    Simpan Pesanan
                 </button>
             </form>
         </div>
@@ -347,6 +371,33 @@
                 products: @json($products),
                 loadingProducts: false,
                 maxStock: 0,
+
+                // Computed property for displaying total item price
+                get totalItemPriceDisplay() {
+                    const priceInt = parseInt(this.price.replace(/[^0-9]/g, '')) || 0;
+                    const stockInt = parseInt(this.stock) || 0;
+                    const total = priceInt * stockInt;
+                    return this.formatRupiah(total);
+                },
+
+                // Method to update total on input change
+                updateTotal() {
+                    // This method is triggered by @input on price and stock.
+                    // The totalItemPriceDisplay getter will automatically re-calculate.
+                },
+
+                // Helper to format currency
+                formatRupiah(val) {
+                    if (!val) return '';
+                    return 'Rp. ' + val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                },
+
+                // Helper to format currency for display in table
+                formatRupiahDisplay(val) {
+                    if (!val) return 'Rp 0';
+                    return 'Rp ' + val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                },
+
                 onProductChange() {
                     const selected = this.products.find(p => p.id == this.product_id);
                     if (selected) {
@@ -363,15 +414,6 @@
                         this.maxStock = 0;
                     }
                 },
-                get total() {
-                    const priceInt = parseInt(this.price.replace(/[^0-9]/g, '')) || 0;
-                    const stockInt = parseInt(this.stock.replace(/[^0-9]/g, '')) || 0;
-                    return priceInt * stockInt;
-                },
-                formatRupiah(val) {
-                    if (!val) return '';
-                    return 'Rp. ' + val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-                },
                 resetFields() {
                     this.product_id = '';
                     this.product = '';
@@ -383,24 +425,31 @@
                     this.$nextTick(() => this.$refs.productInput.focus());
                 },
                 addItem() {
-                    if (!this.product_id || !this.product || !this.category || !this.price || !this
-                        .stock) {
-                        this.error = 'Semua field wajib diisi.';
+                    if (!this.product_id || !this.product || !this.category || this.price === '' || this
+                        .price === null || this.stock === '' || this.stock === null || parseInt(this
+                            .stock) <= 0) {
+                        this.error = 'Semua field (Nama Produk, Stok, Harga) wajib diisi dengan benar.';
                         return;
                     }
                     if (parseInt(this.stock) > this.maxStock) {
                         this.error = 'Stok melebihi stok produk tersedia.';
                         return;
                     }
+
+                    const priceInt = parseInt(this.price.replace(/[^0-9]/g, '')) || 0;
+                    const stockInt = parseInt(this.stock) || 0;
+                    const itemTotal = priceInt * stockInt;
+
                     this.items.push({
                         product_id: this.product_id,
-                        product: this.product,
-                        category: this.category,
-                        price: parseInt(this.price.replace(/[^0-9]/g, '')),
-                        stock: parseInt(this.stock.replace(/[^0-9]/g, '')),
-                        total: this.total
+                        product_name: this.product,
+                        category_name: this.category,
+                        price: priceInt,
+                        stock: stockInt,
+                        total: itemTotal
                     });
                     this.resetFields();
+                    this.error = ''; // Clear error on success
                 },
                 removeItem(idx) {
                     this.items.splice(idx, 1);
@@ -425,8 +474,8 @@
                                     notes: this.notes,
                                     items: this.items.map(item => ({
                                         product_id: item.product_id,
-                                        product: item.product,
-                                        category: item.category,
+                                        product: item.product_name,
+                                        category: item.category_name,
                                         price: item.price,
                                         stock: item.stock,
                                         total: item.total

@@ -93,6 +93,7 @@ class PurchaseOrderController extends Controller
             $order = PurchaseOrder::create([
                 'date' => $validated['date'],
                 'notes' => $validated['notes'] ?? null,
+                'status' => 'berhasil',
             ]);
 
             foreach ($validated['items'] as $item) {

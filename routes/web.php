@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Staff\StaffDashboardController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -32,9 +33,7 @@ Route::middleware('auth')->group(function () {
 
     // Staff routes
     Route::middleware(['auth'])->prefix('staff')->name('staff.')->group(function () {
-        Route::get('/dashboard', function () {
-            return view('staff.dashboard');
-        })->name('dashboard');
+        Route::get('/dashboard', [StaffDashboardController::class, 'index'])->name('dashboard');
         Route::get('/purchase-orders', function () {
             return view('staff.purchase_orders');
         })->name('purchase_orders');
