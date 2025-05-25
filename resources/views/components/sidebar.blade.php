@@ -13,7 +13,7 @@
                class="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all
                {{ request()->routeIs('admin.dashboard') ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50' }}">
                 <div class="flex justify-center items-center w-6 h-6 bg-gray-200 rounded-full">
-                    🏠
+                    <img src="/icons/home.png" alt="Dashboard" class="w-5 h-5" />
                 </div>
                 Beranda
             </a>
@@ -28,7 +28,7 @@
                class="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all
                {{ request()->routeIs('admin.staff.*') ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50' }}">
                 <div class="flex justify-center items-center w-6 h-6 bg-gray-200 rounded-full">
-                    👥
+                    <img src="/icons/users.png" alt="Manajemen Pengguna" class="w-5 h-5" />
                 </div>
                 Manajemen Pengguna
             </a>
@@ -38,7 +38,7 @@
                class="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all
                {{ request()->routeIs('admin.profile') ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50' }}">
                 <div class="flex justify-center items-center w-6 h-6 bg-gray-200 rounded-full">
-                    🗂️
+                    <img src="/icons/profile.png" alt="Profil" class="w-5 h-5" />
                 </div>
                 Profil
             </a>

@@ -1,4 +1,4 @@
-<aside class="w-64 min-h-screen bg-white border-r">
+<aside class="w-64 min-h-screen bg-white">
     <!-- Header -->
     <div class="flex flex-col justify-center items-center text-white bg-gray-800 h-18">
         <h2 class="text-lg font-bold">BonsMerch</h2>
@@ -13,7 +13,7 @@
                class="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all
                {{ request()->routeIs('staff.dashboard') ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50' }}">
                 <div class="flex justify-center items-center w-6 h-6 bg-gray-200 rounded-full">
-                    🏠
+                    <img src="/icons/home.png" alt="Dashboard" class="w-5 h-5" />
                 </div>
                 Beranda
             </a>
@@ -28,7 +28,7 @@
                class="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all
                {{ request()->routeIs('staff.products.index') ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50' }}">
                 <div class="flex justify-center items-center w-6 h-6 bg-gray-200 rounded-full">
-                    📦
+                    <img src="/icons/products.png" alt="Produk" class="w-5 h-5" />
                 </div>
                 Produk
             </a>
@@ -38,7 +38,7 @@
                class="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all
                {{ request()->routeIs('staff.purchase-orders.index') ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50' }}">
                 <div class="flex justify-center items-center w-6 h-6 bg-gray-200 rounded-full">
-                    📝
+                    <img src="/icons/transactions.png" alt="Pesanan Pembelian" class="w-5 h-5" />
                 </div>
                 Pesanan Pembelian
             </a>

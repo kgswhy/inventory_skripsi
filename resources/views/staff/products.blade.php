@@ -890,7 +890,13 @@
 
                         // Tambahkan produk baru ke array dan render ulang
                         if (data.product) {
-                            products.push(data.product);
+                            // Format data produk baru agar sesuai dengan struktur yang diharapkan
+                            const newProduct = {
+                                ...data.product,
+                                image_url: data.product.image ? `/storage/${data.product.image}` : null
+                            };
+                            
+                            products.push(newProduct);
                             filteredProducts = [...products];
                             renderProductsTable();
 
@@ -1253,7 +1259,14 @@
 
                         // Update product in products array
                         const idx = products.findIndex(p => p.id == data.product.id);
-                        if (idx !== -1) products[idx] = data.product;
+                        if (idx !== -1) {
+                            // Format data produk yang sudah diedit agar sesuai dengan struktur yang diharapkan
+                            const updatedProduct = {
+                                ...data.product,
+                                image_url: data.product.image ? `/storage/${data.product.image}` : null
+                            };
+                            products[idx] = updatedProduct;
+                        }
                         filteredProducts = [...products];
                         renderProductsTable();
                         closeModal('editProductModal');

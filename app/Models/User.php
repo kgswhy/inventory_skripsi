@@ -27,6 +27,7 @@ class User extends Authenticatable
         'address',
         'password',
         'role',
+        'profile_image',
     ];
 
     /**
@@ -49,4 +50,16 @@ class User extends Authenticatable
         'birth_date' => 'date',
         'password' => 'hashed',
     ];
+
+    /**
+     * Get the profile image URL with fallback
+     */
+    public function getProfileImageUrlAttribute()
+    {
+        if ($this->profile_image) {
+            return asset('storage/' . $this->profile_image);
+        }
+        
+        return asset('images/default-avatar.svg');
+    }
 }

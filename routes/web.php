@@ -8,7 +8,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Staff\StaffDashboardController;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('login');
 });
 
 Route::middleware('guest')->group(function () {
@@ -21,9 +21,10 @@ Route::middleware('auth')->group(function () {
 
     // Admin routes
     Route::prefix('admin')->name('admin.')->group(function () {
-        Route::get('/dashboard', function () {
-            return view('admin.dashboard');
-        })->name('dashboard');
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/transactions/{id}/detail', [DashboardController::class, 'getTransactionDetail'])->name('transactions.detail');
+        Route::get('/report/print', [DashboardController::class, 'printReport'])->name('report.print');
+        Route::get('/report/data', [DashboardController::class, 'getReportData'])->name('report.data');
 
         Route::get('/profile', [\App\Http\Controllers\Admin\ProfileController::class, 'edit'])->name('profile');
         Route::put('/profile', [\App\Http\Controllers\Admin\ProfileController::class, 'update'])->name('profile.update');

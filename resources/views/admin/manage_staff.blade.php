@@ -21,7 +21,7 @@
         </div>
 
         <div class="mb-4">
-            <input type="text" placeholder="Search" class="shadow appearance-none border rounded w-64 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            <input type="text" id="staffSearchInput" placeholder="Search" class="shadow appearance-none border rounded w-64 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
         </div>
 
         <div class="overflow-x-auto">
@@ -35,7 +35,7 @@
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                     </tr>
                 </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
+                <tbody id="staffTableBody" class="bg-white divide-y divide-gray-200">
                     @foreach($staff as $index => $member)
                     <tr>
                         <td class="px-6 py-4 whitespace-nowrap">{{ $index + 1 }}</td>
@@ -64,8 +64,8 @@
 </div>
 
 <!-- Add Staff Modal -->
-<div id="addModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full">
-    <div class="relative top-50 m-auto p-5 border w-[600px] shadow-lg rounded-md bg-white">
+<div id="addModal" class="fixed inset-0 bg-gray-600/50 hidden overflow-y-auto h-full w-full">
+    <div class="relative top-50 m-auto p-5 w-[600px] shadow-lg rounded-md bg-white">
         <div class="mt-3">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-lg font-bold text-gray-900">Tambah Staff</h3>
@@ -126,8 +126,8 @@
 </div>
 
 <!-- Edit Staff Modal -->
-<div id="editModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full">
-    <div class="relative top-30 mx-auto p-5 border w-[600px] shadow-lg rounded-md bg-white">
+<div id="editModal" class="fixed inset-0 bg-gray-600/50 hidden overflow-y-auto h-full w-full">
+    <div class="relative top-50 mx-auto p-5 w-[600px] shadow-lg rounded-md bg-white">
         <div class="mt-3">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-lg font-bold text-gray-900">Edit Staff</h3>
@@ -189,8 +189,8 @@
 </div>
 
 <!-- Delete Confirmation Modal -->
-<div id="deleteModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full">
-    <div class="relative top-50 mx-auto p-5 border w-[500px] shadow-lg rounded-md bg-white">
+<div id="deleteModal" class="fixed inset-0 bg-gray-600/50 hidden overflow-y-auto h-full w-full">
+    <div class="relative top-70 mx-auto p-5 w-[500px] shadow-lg rounded-md bg-white">
         <div class="mt-3">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-lg font-bold text-gray-900">Hapus Staff?</h3>
@@ -290,6 +290,22 @@
                 if (!confirm('Are you sure you want to delete this staff member?')) {
                     e.preventDefault();
                 }
+            });
+        }
+    });
+
+    // Staff search filter
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('staffSearchInput');
+        const tableBody = document.getElementById('staffTableBody');
+        if (searchInput && tableBody) {
+            searchInput.addEventListener('input', function() {
+                const q = this.value.toLowerCase();
+                const rows = tableBody.querySelectorAll('tr');
+                rows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    row.style.display = text.includes(q) ? '' : 'none';
+                });
             });
         }
     });

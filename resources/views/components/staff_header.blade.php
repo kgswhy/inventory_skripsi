@@ -8,8 +8,8 @@
         <div class="flex items-center space-x-3">
             <div class="relative">
                 <div id="profileDropdownToggle" class="flex items-center cursor-pointer select-none">
-                    <div class="inline-block w-9 h-9 rounded-full bg-green-500 text-white flex items-center justify-center font-semibold text-sm">
-                        {{ strtoupper(substr(auth()->user()->name, 0, 2)) }}
+                    <div class="inline-block w-9 h-9 rounded-full overflow-hidden border-2 border-green-500">
+                        <img src="{{ auth()->user()->profile_image_url }}" alt="Profile" class="w-full h-full object-cover">
                     </div>
                     <div class="ml-2 leading-tight">
                         <div class="text-white text-sm font-semibold">{{ auth()->user()->name }}</div>
