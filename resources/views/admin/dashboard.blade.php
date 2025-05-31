@@ -506,7 +506,6 @@
                 <body>
                     <!-- Header -->
                     <div class="header">
-                        <div class="company-name">SISTEM INVENTORY MANAGEMENT</div>
                         <div class="report-title">LAPORAN TRANSAKSI</div>
                         <div class="date-range">Periode: ${data.start_date} s/d ${data.end_date}</div>
                     </div>
@@ -572,7 +571,7 @@
                     <div class="print-info">
                         <p>Laporan dicetak pada: ${data.printed_at}</p>
                         <p>Dicetak oleh: ${data.printed_by} (${data.user_role})</p>
-                        <p>Sistem Inventory Management - {{ config('app.name') }}</p>
+                        <p>{{ config('app.name') }}</p>
                     </div>
                 </body>
                 </html>

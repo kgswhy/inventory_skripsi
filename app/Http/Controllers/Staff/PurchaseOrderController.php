@@ -76,7 +76,6 @@ class PurchaseOrderController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'date' => 'required|date',
             'notes' => 'nullable|string',
             'items' => 'required|array|min:1',
             'items.*.product_id' => 'required|integer|exists:products,id',
@@ -91,7 +90,7 @@ class PurchaseOrderController extends Controller
             DB::beginTransaction();
             
             $order = PurchaseOrder::create([
-                'date' => $validated['date'],
+                'date' => now()->toDateString(),
                 'notes' => $validated['notes'] ?? null,
                 'status' => 'berhasil',
             ]);

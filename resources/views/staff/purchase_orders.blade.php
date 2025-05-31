@@ -295,11 +295,6 @@
                         class="px-4 py-3 w-full text-base bg-gray-100 rounded-lg border-2 border-gray-200 focus:border-[#00B69B] focus:bg-white focus:outline-none transition"
                         placeholder="Total Harga" readonly>
                 </div>
-                <div class="mb-6">
-                    <label class="block mb-2 text-base font-semibold">Tanggal</label>
-                    <input type="date" x-model="date"
-                        class="px-4 py-3 w-full text-base bg-gray-100 rounded-lg border-2 border-gray-200 focus:border-[#00B69B] focus:bg-white focus:outline-none transition">
-                </div>
                 <div class="mb-8">
                     <label class="block mb-2 text-base font-semibold">Catatan Tambahan</label>
                     <textarea x-model="notes"
@@ -368,7 +363,6 @@
                 price: '',
                 stock: '',
                 error: '',
-                date: new Date().toISOString().split('T')[0],
                 notes: '',
                 products: @json($products),
                 loadingProducts: false,
@@ -472,7 +466,6 @@
                                     'Accept': 'application/json'
                                 },
                                 body: JSON.stringify({
-                                    date: this.date,
                                     notes: this.notes,
                                     items: this.items.map(item => ({
                                         product_id: item.product_id,

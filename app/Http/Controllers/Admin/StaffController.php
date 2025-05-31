@@ -21,6 +21,22 @@ class StaffController extends Controller
         return response()->json($staff);
     }
 
+    public function show(User $staff)
+    {
+        return response()->json([
+            'id' => $staff->id,
+            'name' => $staff->name,
+            'username' => $staff->username,
+            'email' => $staff->email,
+            'phone' => $staff->phone,
+            'birth_date' => $staff->birth_date,
+            'address' => $staff->address,
+            'role' => $staff->role,
+            'created_at' => $staff->created_at ? $staff->created_at->format('d/m/Y H:i') : null,
+            'updated_at' => $staff->updated_at ? $staff->updated_at->format('d/m/Y H:i') : null,
+        ]);
+    }
+
     public function store(Request $request)
     {
         $request->validate([
