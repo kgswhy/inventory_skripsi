@@ -118,7 +118,8 @@
                                 <td class="px-4 py-2 w-4/12 text-left break-words">
                                     {{ $order->items->pluck('product_name')->join(', ') }}
                                 </td>
-                                <td class="px-4 py-2 text-right whitespace-nowrap">{{ $order->items->sum('stock') }} Barang</td>
+                                <td class="px-4 py-2 text-right whitespace-nowrap">{{ $order->items->sum('stock') }} Barang
+                                </td>
                                 <td class="px-4 py-2 text-right whitespace-nowrap">
                                     Rp.{{ number_format($order->items->sum('total'), 0, ',', '.') }}</td>
                                 <td class="px-4 py-2 text-center whitespace-nowrap">
@@ -128,7 +129,8 @@
                                     </button>
                                 </td>
                                 <td class="px-4 py-2 text-center whitespace-nowrap">
-                                    <span class="px-2 py-1 rounded text-xs font-semibold {{ $order->status === 'berhasil' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                    <span
+                                        class="px-2 py-1 rounded text-xs font-semibold {{ $order->status === 'berhasil' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
                                         {{ ucfirst($order->status) }}
                                     </span>
                                 </td>
@@ -227,9 +229,9 @@
 
         <!-- Modal -->
         <div x-show="open" style="display: none;"
-            class="flex fixed inset-0 z-50 justify-center items-center bg-black/30">
-            <form class="relative p-10 w-full max-w-xl bg-white rounded-2xl shadow-2xl" x-data="purchaseOrder"
-                @submit.prevent="submitForm">
+            class="flex overflow-y-auto fixed inset-0 z-50 justify-center items-center bg-black/30">
+            <form class="relative p-10 w-full max-w-xl bg-white rounded-2xl shadow-2xl my-8 max-h-[90vh] overflow-y-auto"
+                x-data="purchaseOrder" @submit.prevent="submitForm">
                 <button type="button" @click="open = false"
                     class="flex absolute top-6 right-6 justify-center items-center w-10 h-10 text-gray-400 rounded-full transition hover:text-gray-600 hover:bg-gray-100"
                     aria-label="Tutup">
