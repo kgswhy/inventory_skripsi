@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Traits\HandlesErrors;
 use App\Models\User;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderItem;
@@ -12,9 +13,11 @@ use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
+    use HandlesErrors;
+
     public function index()
     {
-        try {
+        return $this->executeWithErrorHandling(function () {
             // Count only staff users (excluding admin)
             $totalStaff = User::where('role', 'staff')->count();
             $activeStaff = User::where('role', 'staff')->count();
@@ -74,6 +77,8 @@ class DashboardController extends Controller
                     ];
                 });
             
+            $this->logOperation('view', 'Dashboard', null, ['context' => 'admin_dashboard']);
+            
             return view('admin.dashboard', compact(
                 'totalStaff',
                 'activeStaff',
@@ -83,33 +88,19 @@ class DashboardController extends Controller
                 'todayTransactions',
                 'latestTransactions'
             ));
-        } catch (\Exception $e) {
-            \Log::error('Admin Dashboard Error: ' . $e->getMessage(), [
-                'trace' => $e->getTraceAsString()
-            ]);
-            
-            // Return view with default values in case of error
-            return view('admin.dashboard', [
-                'totalStaff' => 0,
-                'activeStaff' => 0,
-                'monthlyTotal' => 0,
-                'todayTotal' => 0,
-                'totalTransactions' => 0,
-                'todayTransactions' => 0,
-                'latestTransactions' => collect(),
-                'error' => 'Terjadi kesalahan saat memuat data dashboard: ' . $e->getMessage()
-            ]);
-        }
+        }, 'memuat dashboard admin');
     }
     
     public function getTransactionDetail($id)
     {
-        try {
+        return $this->executeWithErrorHandling(function () use ($id) {
             $order = PurchaseOrder::with(['items' => function($query) {
                 $query->select('purchase_order_id', 'product_name', 'category_name', 'price', 'stock', 'total');
             }])
             ->select('id', 'date', 'status', 'notes')
             ->findOrFail($id);
+
+            $this->logOperation('view', 'Transaction', $id, ['context' => 'transaction_detail']);
 
             return response()->json([
                 'id' => 'T' . str_pad($order->id, 7, '0', STR_PAD_LEFT),
@@ -127,17 +118,12 @@ class DashboardController extends Controller
                     ];
                 })
             ]);
-        } catch (\Exception $e) {
-            \Log::error('Error fetching transaction detail: ' . $e->getMessage());
-            return response()->json([
-                'error' => 'Transaksi tidak ditemukan'
-            ], 404);
-        }
+        }, 'mengambil detail transaksi');
     }
 
     public function printReport(Request $request)
     {
-        try {
+        return $this->executeWithErrorHandling(function () use ($request) {
             // Validate and get date range from request or default to current month
             $startDate = $request->get('start_date') ? Carbon::parse($request->get('start_date')) : Carbon::now()->startOfMonth();
             $endDate = $request->get('end_date') ? Carbon::parse($request->get('end_date')) : Carbon::now()->endOfMonth();
@@ -196,6 +182,11 @@ class DashboardController extends Controller
             $totalStaff = User::where('role', 'staff')->count();
             $totalProducts = Product::count();
 
+            $this->logOperation('generate', 'Report', null, [
+                'date_range' => [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')],
+                'transactions_count' => $transactions->count()
+            ]);
+
             return view('admin.report', compact(
                 'startDate',
                 'endDate',
@@ -207,113 +198,68 @@ class DashboardController extends Controller
                 'totalStaff',
                 'totalProducts'
             ));
-        } catch (\Exception $e) {
-            \Log::error('Print Report Error: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Gagal generate laporan: ' . $e->getMessage());
-        }
+        }, 'mencetak laporan', $request);
     }
 
     public function getReportData(Request $request)
     {
-        try {
-            // Validate and get date range from request or default to current month
+        return $this->executeWithErrorHandling(function () use ($request) {
             $startDate = $request->get('start_date') ? Carbon::parse($request->get('start_date')) : Carbon::now()->startOfMonth();
             $endDate = $request->get('end_date') ? Carbon::parse($request->get('end_date')) : Carbon::now()->endOfMonth();
             
             // Validate date range
             if ($startDate > $endDate) {
-                return response()->json(['error' => 'Tanggal mulai tidak boleh lebih besar dari tanggal akhir.'], 400);
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Tanggal mulai tidak boleh lebih besar dari tanggal akhir.'
+                ], 422);
             }
             
-            // Get statistics for the date range
-            $monthlyTotal = DB::table('purchase_order_items')
+            // Get sales data grouped by date
+            $salesData = DB::table('purchase_order_items')
                 ->join('purchase_orders', 'purchase_orders.id', '=', 'purchase_order_items.purchase_order_id')
                 ->whereBetween('purchase_orders.date', [$startDate, $endDate])
                 ->where('purchase_orders.status', 'berhasil')
-                ->sum('purchase_order_items.total');
+                ->select(
+                    DB::raw('DATE(purchase_orders.date) as date'),
+                    DB::raw('SUM(purchase_order_items.total) as total_sales'),
+                    DB::raw('COUNT(DISTINCT purchase_orders.id) as transaction_count')
+                )
+                ->groupBy(DB::raw('DATE(purchase_orders.date)'))
+                ->orderBy('date')
+                ->get();
 
-            $totalTransactions = PurchaseOrder::whereBetween('date', [$startDate, $endDate])->count();
-            $successfulTransactions = PurchaseOrder::whereBetween('date', [$startDate, $endDate])->where('status', 'berhasil')->count();
-            
-            // Get all transactions in the date range
-            $transactions = PurchaseOrder::with(['items' => function($query) {
-                    $query->select('purchase_order_id', 'product_name', 'category_name', 'price', 'stock', 'total');
-                }])
-                ->select('id', 'date', 'status', 'notes')
-                ->whereBetween('date', [$startDate, $endDate])
-                ->orderBy('date', 'desc')
-                ->get()
-                ->map(function($order) {
-                    $totalItems = $order->items->sum('stock');
-                    $totalPrice = $order->items->sum('total');
-                    
-                    return [
-                        'id' => 'T' . str_pad($order->id, 7, '0', STR_PAD_LEFT),
-                        'date' => Carbon::parse($order->date)->format('d/m/Y'),
-                        'status' => ucfirst($order->status),
-                        'items_count' => $totalItems,
-                        'total_price' => $totalPrice,
-                        'formatted_total' => 'Rp. ' . number_format($totalPrice, 0, ',', '.'),
-                        'items' => $order->items->map(function($item) {
-                            return [
-                                'product_name' => $item->product_name,
-                                'category_name' => $item->category_name,
-                                'price' => $item->price,
-                                'stock' => $item->stock,
-                                'total' => $item->total,
-                                'formatted_price' => 'Rp. ' . number_format($item->price, 0, ',', '.'),
-                                'formatted_total' => 'Rp. ' . number_format($item->total, 0, ',', '.')
-                            ];
-                        })
-                    ];
-                });
-
-            // Get product statistics
-            $productStats = DB::table('purchase_order_items')
+            // Get product performance
+            $productPerformance = DB::table('purchase_order_items')
                 ->join('purchase_orders', 'purchase_orders.id', '=', 'purchase_order_items.purchase_order_id')
                 ->whereBetween('purchase_orders.date', [$startDate, $endDate])
                 ->where('purchase_orders.status', 'berhasil')
-                ->select('product_name', 
-                    DB::raw('SUM(stock) as total_sold'),
-                    DB::raw('SUM(total) as total_revenue'),
-                    DB::raw('COUNT(*) as transaction_count'))
+                ->select(
+                    'product_name',
+                    DB::raw('SUM(stock) as total_quantity'),
+                    DB::raw('SUM(total) as total_revenue')
+                )
                 ->groupBy('product_name')
                 ->orderBy('total_revenue', 'desc')
-                ->get()
-                ->map(function($product) {
-                    return [
-                        'product_name' => $product->product_name,
-                        'total_sold' => $product->total_sold,
-                        'total_revenue' => $product->total_revenue,
-                        'transaction_count' => $product->transaction_count,
-                        'formatted_revenue' => 'Rp. ' . number_format($product->total_revenue, 0, ',', '.')
-                    ];
-                });
+                ->limit(10)
+                ->get();
 
-            $totalStaff = User::where('role', 'staff')->count();
-            $totalProducts = Product::count();
+            $this->logOperation('view', 'ReportData', null, [
+                'date_range' => [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')],
+                'data_type' => 'chart_data'
+            ]);
 
             return response()->json([
                 'success' => true,
                 'data' => [
-                    'start_date' => $startDate->format('d/m/Y'),
-                    'end_date' => $endDate->format('d/m/Y'),
-                    'monthly_total' => $monthlyTotal,
-                    'formatted_monthly_total' => 'Rp. ' . number_format($monthlyTotal, 0, ',', '.'),
-                    'total_transactions' => $totalTransactions,
-                    'successful_transactions' => $successfulTransactions,
-                    'transactions' => $transactions,
-                    'product_stats' => $productStats,
-                    'total_staff' => $totalStaff,
-                    'total_products' => $totalProducts,
-                    'printed_at' => now()->format('d/m/Y H:i:s'),
-                    'printed_by' => auth()->user()->name,
-                    'user_role' => ucfirst(auth()->user()->role)
+                    'sales_data' => $salesData,
+                    'product_performance' => $productPerformance,
+                    'date_range' => [
+                        'start' => $startDate->format('Y-m-d'),
+                        'end' => $endDate->format('Y-m-d')
+                    ]
                 ]
             ]);
-        } catch (\Exception $e) {
-            \Log::error('Get Report Data Error: ' . $e->getMessage());
-            return response()->json(['error' => 'Gagal mengambil data laporan: ' . $e->getMessage()], 500);
-        }
+        }, 'mengambil data laporan', $request);
     }
 } 

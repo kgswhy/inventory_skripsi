@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Staff;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Traits\HandlesErrors;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Category;
@@ -10,25 +11,21 @@ use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
+    use HandlesErrors;
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        try {
+        return $this->executeWithErrorHandling(function () {
             $products = Product::with('category')->get();
             $categories = Category::all();
 
-            if (config('app.debug')) {
-                \Log::info('Products data:', ['products' => $products->toArray()]);
-                \Log::info('Categories data:', ['categories' => $categories->toArray()]);
-            }
+            $this->logOperation('view', 'Product');
 
             return view('staff.products', compact('products', 'categories'));
-        } catch (\Exception $e) {
-            \Log::error('Error in ProductController@index: ' . $e->getMessage());
-            return view('staff.products', ['products' => collect([]), 'categories' => collect([])]);
-        }
+        }, 'mengambil daftar produk', $request);
     }
 
     /**
@@ -44,7 +41,7 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        try {
+        return $this->executeWithErrorHandling(function () use ($request) {
             $validated = $request->validate([
                 'name' => 'required|string|max:255',
                 'category_id' => 'required|exists:categories,id',
@@ -52,6 +49,20 @@ class ProductController extends Controller
                 'stock' => 'required|integer|min:0',
                 'status' => 'required|in:tersedia,habis',
                 'image' => 'nullable|image|max:2048',
+            ], [
+                'name.required' => 'Nama produk wajib diisi.',
+                'category_id.required' => 'Kategori produk wajib dipilih.',
+                'category_id.exists' => 'Kategori yang dipilih tidak valid.',
+                'price.required' => 'Harga produk wajib diisi.',
+                'price.integer' => 'Harga produk harus berupa angka.',
+                'price.min' => 'Harga produk tidak boleh negatif.',
+                'stock.required' => 'Stok produk wajib diisi.',
+                'stock.integer' => 'Stok produk harus berupa angka.',
+                'stock.min' => 'Stok produk tidak boleh negatif.',
+                'status.required' => 'Status produk wajib dipilih.',
+                'status.in' => 'Status produk harus tersedia atau habis.',
+                'image.image' => 'File harus berupa gambar.',
+                'image.max' => 'Ukuran gambar maksimal 2MB.',
             ]);
 
             if ($request->hasFile('image')) {
@@ -59,18 +70,11 @@ class ProductController extends Controller
             }
 
             $product = Product::create($validated);
-            return response()->json([
-                'success' => true,
-                'message' => 'Product created successfully',
-                'product' => $product->load('category')
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-                'errors' => $e instanceof \Illuminate\Validation\ValidationException ? $e->errors() : null
-            ], 422);
-        }
+
+            $this->logOperation('create', 'Product', $product->id, $validated);
+
+            return $this->successResponse('Produk berhasil ditambahkan', $product->load('category'), 201);
+        }, 'menambahkan produk', $request);
     }
 
     /**
@@ -78,7 +82,10 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        return response()->json($product->load('category'));
+        return $this->executeWithErrorHandling(function () use ($product) {
+            $this->logOperation('view', 'Product', $product->id);
+            return response()->json($product->load('category'));
+        }, 'mengambil detail produk');
     }
 
     /**
@@ -94,22 +101,47 @@ class ProductController extends Controller
      */
     public function update(Request $request, Product $product)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'category_id' => 'required|exists:categories,id',
-            'price' => 'required|integer|min:0',
-            'stock' => 'required|integer|min:0',
-            'status' => 'required|in:tersedia,habis',
-            'image' => 'nullable|image|max:2048',
-        ]);
-        if ($request->hasFile('image')) {
-            if ($product->image) {
-                Storage::disk('public')->delete($product->image);
+        return $this->executeWithErrorHandling(function () use ($request, $product) {
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'category_id' => 'required|exists:categories,id',
+                'price' => 'required|integer|min:0',
+                'stock' => 'required|integer|min:0',
+                'status' => 'required|in:tersedia,habis',
+                'image' => 'nullable|image|max:2048',
+            ], [
+                'name.required' => 'Nama produk wajib diisi.',
+                'category_id.required' => 'Kategori produk wajib dipilih.',
+                'category_id.exists' => 'Kategori yang dipilih tidak valid.',
+                'price.required' => 'Harga produk wajib diisi.',
+                'price.integer' => 'Harga produk harus berupa angka.',
+                'price.min' => 'Harga produk tidak boleh negatif.',
+                'stock.required' => 'Stok produk wajib diisi.',
+                'stock.integer' => 'Stok produk harus berupa angka.',
+                'stock.min' => 'Stok produk tidak boleh negatif.',
+                'status.required' => 'Status produk wajib dipilih.',
+                'status.in' => 'Status produk harus tersedia atau habis.',
+                'image.image' => 'File harus berupa gambar.',
+                'image.max' => 'Ukuran gambar maksimal 2MB.',
+            ]);
+
+            if ($request->hasFile('image')) {
+                if ($product->image) {
+                    Storage::disk('public')->delete($product->image);
+                }
+                $validated['image'] = $request->file('image')->store('products', 'public');
             }
-            $validated['image'] = $request->file('image')->store('products', 'public');
-        }
-        $product->update($validated);
-        return response()->json(['success' => true, 'product' => $product->load('category')]);
+
+            $oldData = $product->toArray();
+            $product->update($validated);
+
+            $this->logOperation('update', 'Product', $product->id, [
+                'old' => $oldData,
+                'new' => $validated
+            ]);
+
+            return $this->successResponse('Produk berhasil diperbarui', $product->load('category'));
+        }, 'memperbarui produk', $request);
     }
 
     /**
@@ -117,11 +149,19 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        if ($product->image) {
-            Storage::disk('public')->delete($product->image);
-        }
-        $product->delete();
-        return response()->json(['success' => true]);
+        return $this->executeWithErrorHandling(function () use ($product) {
+            $productData = $product->toArray();
+
+            if ($product->image) {
+                Storage::disk('public')->delete($product->image);
+            }
+
+            $product->delete();
+
+            $this->logOperation('delete', 'Product', $product->id, $productData);
+
+            return $this->successResponse('Produk berhasil dihapus');
+        }, 'menghapus produk');
     }
 
     /**
@@ -129,30 +169,10 @@ class ProductController extends Controller
      */
     public function list()
     {
-        try {
-            \Log::info('Fetching products for purchase order - Request received');
-            \Log::info('Request details:', [
-                'url' => request()->url(),
-                'method' => request()->method(),
-                'headers' => request()->headers->all(),
-                'authenticated' => auth()->check(),
-                'user' => auth()->user() ? [
-                    'id' => auth()->id(),
-                    'name' => auth()->user()->name,
-                    'role' => auth()->user()->role ?? 'unknown'
-                ] : null
-            ]);
-
-            if (!auth()->check()) {
-                \Log::warning('Unauthenticated request to products/list');
-                return response()->json(['error' => 'Unauthenticated'], 401);
-            }
-
+        return $this->executeWithErrorHandling(function () {
             $products = Product::with('category')
                 ->where('status', 'tersedia')
                 ->get();
-
-            \Log::info('Raw products query result:', ['count' => $products->count()]);
 
             $mappedProducts = $products->map(function ($product) {
                 return [
@@ -165,16 +185,9 @@ class ProductController extends Controller
                 ];
             })->values();
 
-            \Log::info('Mapped products:', ['products' => $mappedProducts->toArray()]);
+            $this->logOperation('view', 'Product', null, ['context' => 'purchase_order_list']);
 
             return response()->json($mappedProducts, 200, [], JSON_UNESCAPED_UNICODE);
-        } catch (\Exception $e) {
-            \Log::error('Error in ProductController@list: ' . $e->getMessage(), [
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-                'trace' => $e->getTraceAsString()
-            ]);
-            return response()->json(['error' => 'Failed to fetch products: ' . $e->getMessage()], 500, [], JSON_UNESCAPED_UNICODE);
-        }
+        }, 'mengambil daftar produk untuk pesanan');
     }
 }

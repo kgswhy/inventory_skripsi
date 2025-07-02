@@ -395,9 +395,6 @@
             </div>
         </div>
     </div>
-@endsection
-
-@push('scripts')
     <script>
         // Add CSRF token to all AJAX requests
         $.ajaxSetup({
@@ -1377,4 +1374,6 @@
             }
         });
     </script>
-@endpush
+@endsection
+
+
