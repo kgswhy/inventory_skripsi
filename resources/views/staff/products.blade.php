@@ -156,6 +156,7 @@
                         class="px-4 py-3 w-full text-base bg-gray-100 rounded-lg border-2 border-gray-200 focus:border-[#00B69B] focus:bg-white focus:outline-none transition" />
                     <span class="block mt-2 text-xs text-red-500" id="addProductErrorName"></span>
                 </div>
+                
                 <div class="mb-6">
                     <label class="block mb-2 text-base font-semibold">Kategori</label>
                     <div class="relative">
