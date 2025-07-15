@@ -200,7 +200,7 @@
 
                     <template x-if="selectedOrder">
                         <div>
-                            <h3 class="mb-6 text-2xl font-bold text-gray-900">Detail Transaksi Pembelian #<span
+                            <h3 class="mb-6 text-2xl font-bold text-gray-900">Detail Transaksi Penjualan #<span
                                     x-text="selectedOrder.id"></span></h3>
 
                             <div class="pb-4 mb-6 border-b">

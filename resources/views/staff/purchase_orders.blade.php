@@ -1,6 +1,6 @@
 @extends('layouts.staff')
 
-@section('header-title', 'Transaksi Pembelian')
+@section('header-title', 'Transaksi Penjualan')
 
 @section('content')
     <div x-data="{
@@ -36,12 +36,12 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M9 17v-2a2 2 0 012-2h2a2 2 0 012 2v2m-6 4h6a2 2 0 002-2v-5a2 2 0 00-2-2h-1V7a2 2 0 00-2-2h-2a2 2 0 00-2 2v7H7a2 2 0 00-2 2v5a2 2 0 002 2z" />
                     </svg>
-                    <h1 class="text-xl font-semibold">Transaksi Pembelian</h1>
+                    <h1 class="text-xl font-semibold">Transaksi Penjualan</h1>
                 </div>
                 <button type="button" @click="open = true"
                     class="px-8 py-3 text-lg font-semibold text-white rounded-lg shadow transition"
                     style="background-color: #00B69B;" onmouseover="this.style.backgroundColor='#00997F'"
-                    onmouseout="this.style.backgroundColor='#00B69B'">+ Bikin Transaksi Pembelian</button>
+                    onmouseout="this.style.backgroundColor='#00B69B'">+ Bikin Transaksi Penjualan</button>
             </div>
             <form action="{{ route('staff.purchase-orders.index') }}" method="GET" class="flex flex-wrap gap-4 mb-6">
                 <div>
@@ -95,7 +95,7 @@
             </form>
         </div>
         <div class="p-8 bg-white rounded-xl shadow">
-            <h2 class="mb-4 text-lg font-bold">List Transaksi Pembelian</h2>
+            <h2 class="mb-4 text-lg font-bold">List Transaksi Penjualan</h2>
             <div class="overflow-x-auto">
                 <table class="min-w-full text-sm border-separate border-spacing-y-2">
                     <thead>
@@ -138,7 +138,7 @@
                         @empty
                             <tr>
                                 <td colspan="6" class="px-4 py-2 text-center text-gray-500">Belum ada transaksi
-                                    pembelian.</td>
+                                    penjualan.</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -161,7 +161,7 @@
 
                 <template x-if="selectedOrder">
                     <div>
-                        <h3 class="mb-6 text-2xl font-bold text-gray-900">Detail Transaksi Pembelian #<span
+                        <h3 class="mb-6 text-2xl font-bold text-gray-900">Detail Transaksi Penjualan #<span
                                 x-text="selectedOrder.id"></span></h3>
 
                         <div class="pb-4 mb-6 border-b">
@@ -240,8 +240,8 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
-                <h3 class="mb-2 text-3xl font-bold text-gray-900">Transaksi Pembelian</h3>
-                <p class="mb-8 text-gray-500">Isi detail Transaksi Pembelian di bawah ini.</p>
+                <h3 class="mb-2 text-3xl font-bold text-gray-900">Transaksi Penjualan</h3>
+                <p class="mb-8 text-gray-500">Isi detail Transaksi Penjualan di bawah ini.</p>
                 <div class="grid grid-cols-2 gap-6 mb-6">
                     <div>
                         <label class="block mb-2 text-base font-semibold">Nama Produk</label>

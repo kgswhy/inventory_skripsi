@@ -228,7 +228,7 @@ trait HandlesErrors
             'Staff' => 'Staff',
             'Product' => 'Produk',
             'Category' => 'Kategori',
-            'PurchaseOrder' => 'Pesanan Pembelian',
+            'PurchaseOrder' => 'Transaksi Penjualan',
         ];
 
         return $translations[$modelName] ?? $modelName;

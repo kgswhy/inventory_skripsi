@@ -38,9 +38,9 @@
                class="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all
                {{ request()->routeIs('staff.purchase-orders.index') ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50' }}">
                 <div class="flex justify-center items-center w-6 h-6 bg-gray-200 rounded-full">
-                    <img src="/icons/transactions.png" alt="Pesanan Pembelian" class="w-5 h-5" />
+                    <img src="/icons/transactions.png" alt="Transaksi Penjualan" class="w-5 h-5" />
                 </div>
-                Pesanan Pembelian
+                Transaksi Penjualan
             </a>
         </div>
     </nav>
