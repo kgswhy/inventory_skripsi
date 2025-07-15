@@ -25,6 +25,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/transactions/{id}/detail', [DashboardController::class, 'getTransactionDetail'])->name('transactions.detail');
         Route::get('/report/print', [DashboardController::class, 'printReport'])->name('report.print');
         Route::get('/report/data', [DashboardController::class, 'getReportData'])->name('report.data');
+        Route::get('/report/print-data', [DashboardController::class, 'getPrintReportData'])->name('report.print-data');
 
         Route::get('/profile', [\App\Http\Controllers\Admin\ProfileController::class, 'edit'])->name('profile');
         Route::put('/profile', [\App\Http\Controllers\Admin\ProfileController::class, 'update'])->name('profile.update');

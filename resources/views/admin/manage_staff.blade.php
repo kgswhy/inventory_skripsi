@@ -7,45 +7,15 @@
 @section('content')
     <div class="w-full h-full bg-white rounded-lg shadow">
         <div class="p-6">
-            @if (session('success'))
-                <div class="relative px-4 py-3 mb-4 text-green-700 bg-green-100 rounded border border-green-400"
-                    role="alert">
-                    <span class="block sm:inline">{{ session('success') }}</span>
-                </div>
-            @endif
-
-            @if (session('error'))
-                <div class="relative px-4 py-3 mb-4 text-red-700 bg-red-100 rounded border border-red-400" role="alert">
-                    <span class="block sm:inline">{{ session('error') }}</span>
-                </div>
-            @endif
-
-            @if ($errors->any())
-                <div class="p-4 mb-4 bg-red-50 rounded-md border border-red-200">
-                    <div class="flex">
-                        <div class="flex-shrink-0">
-                            <svg class="w-5 h-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
-                                fill="currentColor">
-                                <path fill-rule="evenodd"
-                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                                    clip-rule="evenodd" />
-                            </svg>
-                        </div>
-                        <div class="ml-3">
-                            <h3 class="text-sm font-medium text-red-800">
-                                Terjadi kesalahan saat menambahkan staff:
-                            </h3>
-                            <div class="mt-2 text-sm text-red-700">
-                                <ul class="space-y-1 list-disc list-inside">
-                                    @foreach ($errors->all() as $error)
-                                        <li>{{ $error }}</li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            @endif
+            {{-- Single Alert Container --}}
+            <div id="alertContainer" class="hidden relative px-4 py-3 mb-4 rounded border" role="alert">
+                <span id="alertMessage" class="block sm:inline"></span>
+                <button type="button" onclick="hideAlert()" class="absolute top-0 right-0 p-1 text-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
 
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-xl font-semibold text-gray-800">Manajemen Staff</h3>
@@ -374,6 +344,43 @@
     </div>
 
     <script>
+        // Single Alert System
+        function showAlert(message, type = 'success') {
+            const alertContainer = document.getElementById('alertContainer');
+            const alertMessage = document.getElementById('alertMessage');
+            
+            // Clear any existing alerts first
+            hideAlert();
+            
+            // Set message
+            alertMessage.textContent = message;
+            
+            // Set colors based on type
+            alertContainer.className = 'relative px-4 py-3 mb-4 rounded border';
+            if (type === 'success') {
+                alertContainer.classList.add('text-green-700', 'bg-green-100', 'border-green-400');
+            } else if (type === 'error') {
+                alertContainer.classList.add('text-red-700', 'bg-red-100', 'border-red-400');
+            } else if (type === 'warning') {
+                alertContainer.classList.add('text-yellow-700', 'bg-yellow-100', 'border-yellow-400');
+            } else {
+                alertContainer.classList.add('text-blue-700', 'bg-blue-100', 'border-blue-400');
+            }
+            
+            // Show alert
+            alertContainer.classList.remove('hidden');
+            
+            // Auto hide after 5 seconds
+            setTimeout(() => {
+                hideAlert();
+            }, 5000);
+        }
+
+        function hideAlert() {
+            const alertContainer = document.getElementById('alertContainer');
+            alertContainer.classList.add('hidden');
+        }
+
         function openAddModal() {
             document.getElementById('addModal').classList.remove('hidden');
         }
@@ -388,7 +395,7 @@
             form.action = `/admin/staff/${id}`;
 
             // Show loading state
-            showLoading('Memuat data staff...', 'edit-staff');
+            showAlert('Memuat data staff...', 'info');
 
             // Fetch staff data
             fetch(`/admin/staff/${id}/edit`)
@@ -407,12 +414,12 @@
                     document.getElementById('edit_address').value = data.address || '';
                     document.getElementById('edit_password').value = ''; // Clear password field
                     
-                    hideLoading('edit-staff');
+                    hideAlert('Memuat data staff...', 'info');
                     modal.classList.remove('hidden');
                 })
                 .catch(error => {
-                    hideLoading('edit-staff');
-                    showError('Gagal memuat data staff: ' + error.message);
+                    hideAlert('Memuat data staff...', 'info');
+                    showAlert('Gagal memuat data staff: ' + error.message, 'error');
                 });
         }
 
@@ -435,7 +442,7 @@
             const modal = document.getElementById('detailModal');
 
             // Show loading state
-            showLoading('Memuat detail staff...', 'detail-staff');
+            showAlert('Memuat detail staff...', 'info');
 
             // Fetch staff data
             fetch(`/admin/staff/${id}`)
@@ -457,12 +464,12 @@
                     document.getElementById('detail_created_at').textContent = data.created_at || '-';
                     document.getElementById('detail_updated_at').textContent = data.updated_at || '-';
                     
-                    hideLoading('detail-staff');
+                    hideAlert('Memuat detail staff...', 'info');
                     modal.classList.remove('hidden');
                 })
                 .catch(error => {
-                    hideLoading('detail-staff');
-                    showError('Gagal mengambil detail staff: ' + error.message);
+                    hideAlert('Memuat detail staff...', 'info');
+                    showAlert('Gagal mengambil detail staff: ' + error.message, 'error');
                 });
         }
 
@@ -472,6 +479,15 @@
 
         // Enhanced form validation with better error handling
         document.addEventListener('DOMContentLoaded', function() {
+            // Show only one message with priority: success > error > validation errors
+            @if(session('success'))
+                showAlert('{{ session('success') }}', 'success');
+            @elseif(session('error'))
+                showAlert('{{ session('error') }}', 'error');
+            @elseif($errors->any())
+                showAlert('{{ $errors->first() }}', 'error');
+            @endif
+
             const addForm = document.querySelector('form[action="{{ route('admin.staff.store') }}"]');
             const editForm = document.getElementById('editForm');
             const deleteForm = document.getElementById('deleteForm');
@@ -505,14 +521,12 @@
                 addForm.addEventListener('submit', function(e) {
                     if (!validatePasswords() || !this.checkValidity()) {
                         e.preventDefault();
-                        showError('Mohon periksa kembali form Anda. Pastikan semua field required telah diisi dan password konfirmasi cocok.');
+                        showAlert('Mohon periksa kembali form Anda. Pastikan semua field required telah diisi dan password konfirmasi cocok.', 'error');
                         return false;
                     }
                     
-                    return handleFormSubmit(this, {
-                        loadingText: 'Menambahkan staff...',
-                        successMessage: 'Staff berhasil ditambahkan'
-                    });
+                    // Show loading message
+                    showAlert('Menambahkan staff...', 'info');
                 });
             }
 
@@ -540,14 +554,12 @@
                 editForm.addEventListener('submit', function(e) {
                     if (!validateEditPasswords() || !this.checkValidity()) {
                         e.preventDefault();
-                        showError('Mohon periksa kembali form Anda. Pastikan semua field required telah diisi dan password konfirmasi cocok.');
+                        showAlert('Mohon periksa kembali form Anda. Pastikan semua field required telah diisi dan password konfirmasi cocok.', 'error');
                         return false;
                     }
                     
-                    return handleFormSubmit(this, {
-                        loadingText: 'Memperbarui staff...',
-                        successMessage: 'Staff berhasil diperbarui'
-                    });
+                    // Show loading message
+                    showAlert('Memperbarui staff...', 'info');
                 });
             }
 
@@ -559,11 +571,8 @@
                         return false;
                     }
                     
-                    return handleFormSubmit(this, {
-                        confirmMessage: 'Apakah Anda yakin ingin menghapus staff ini?',
-                        loadingText: 'Menghapus staff...',
-                        successMessage: 'Staff berhasil dihapus'
-                    });
+                    // Show loading message
+                    showAlert('Menghapus staff...', 'info');
                 });
             }
         });
@@ -584,7 +593,7 @@
                             row.style.display = text.includes(q) ? '' : 'none';
                         });
                     } catch (error) {
-                        showError('Terjadi kesalahan saat melakukan pencarian');
+                        showAlert('Terjadi kesalahan saat melakukan pencarian', 'error');
                         console.error('Search error:', error);
                     }
                 });

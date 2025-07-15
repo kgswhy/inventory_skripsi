@@ -887,11 +887,11 @@
                         }
 
                         // Tambahkan produk baru ke array dan render ulang
-                        if (data.product) {
+                        if (data.data) {
                             // Format data produk baru agar sesuai dengan struktur yang diharapkan
                             const newProduct = {
-                                ...data.product,
-                                image_url: data.product.image ? `/storage/${data.product.image}` : null
+                                ...data.data,
+                                image_url: data.data.image ? `/storage/${data.data.image}` : null
                             };
                             
                             products.push(newProduct);
@@ -962,7 +962,7 @@
                         }
 
                         // Tambahkan kategori baru ke array dan render ulang
-                        categories.push(data.category);
+                        categories.push(data.data);
                         filteredCategories = [...categories];
                         renderCategoriesTable();
                         renderCategoryOptions('addProductCategorySelect');
@@ -1256,12 +1256,12 @@
                         }
 
                         // Update product in products array
-                        const idx = products.findIndex(p => p.id == data.product.id);
+                        const idx = products.findIndex(p => p.id == data.data.id);
                         if (idx !== -1) {
                             // Format data produk yang sudah diedit agar sesuai dengan struktur yang diharapkan
                             const updatedProduct = {
-                                ...data.product,
-                                image_url: data.product.image ? `/storage/${data.product.image}` : null
+                                ...data.data,
+                                image_url: data.data.image ? `/storage/${data.data.image}` : null
                             };
                             products[idx] = updatedProduct;
                         }

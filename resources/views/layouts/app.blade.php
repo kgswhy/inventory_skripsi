@@ -45,53 +45,13 @@
             <!-- Header -->
             @include('components.header')
             
-            <!-- Global Alert Messages -->
-            <div class="p-6 pb-0">
-                @if (session('success'))
-                    <x-alert type="success" class="mb-4">
-                        {{ session('success') }}
-                    </x-alert>
-                @endif
-
-                @if (session('error'))
-                    <x-alert type="error" class="mb-4">
-                        {{ session('error') }}
-                    </x-alert>
-                @endif
-
-                @if (session('warning'))
-                    <x-alert type="warning" class="mb-4">
-                        {{ session('warning') }}
-                    </x-alert>
-                @endif
-
-                @if (session('info'))
-                    <x-alert type="info" class="mb-4">
-                        {{ session('info') }}
-                    </x-alert>
-                @endif
-
-                @if ($errors->any())
-                    <x-alert type="error" title="Terdapat kesalahan:" class="mb-4">
-                        <ul class="mt-2 list-disc list-inside space-y-1">
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </x-alert>
-                @endif
-            </div>
-            
             <!-- Main Content -->
-            <main class="flex-1 p-6 pt-0">
+            <main class="flex-1 p-6">
                 @yield('content')
             </main>
         </div>
     </div>
 
-    <!-- Toast Notifications -->
-    <x-toast />
-    
     <!-- Loading Component (can be included globally) -->
     <x-loading overlay="false" style="display: none;" id="global-loading" />
 
@@ -102,25 +62,6 @@
     
     <!-- Global JavaScript for Error Handling -->
     <script>
-        // Show Laravel session messages as toasts
-        document.addEventListener('DOMContentLoaded', function() {
-            @if (session('success'))
-                window.ToastManager?.success('Berhasil', '{{ session('success') }}');
-            @endif
-
-            @if (session('error'))
-                window.ToastManager?.error('Error', '{{ session('error') }}');
-            @endif
-
-            @if (session('warning'))
-                window.ToastManager?.warning('Peringatan', '{{ session('warning') }}');
-            @endif
-
-            @if (session('info'))
-                window.ToastManager?.info('Informasi', '{{ session('info') }}');
-            @endif
-        });
-        
         // Enhanced form submission handling
         function handleFormSubmit(form, options = {}) {
             const {

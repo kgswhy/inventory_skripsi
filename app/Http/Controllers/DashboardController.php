@@ -262,4 +262,99 @@ class DashboardController extends Controller
             ]);
         }, 'mengambil data laporan', $request);
     }
+
+    public function getPrintReportData(Request $request)
+    {
+        return $this->executeWithErrorHandling(function () use ($request) {
+            $startDate = $request->get('start_date') ? Carbon::parse($request->get('start_date')) : Carbon::now()->startOfMonth();
+            $endDate = $request->get('end_date') ? Carbon::parse($request->get('end_date')) : Carbon::now()->endOfMonth();
+            
+            // Validate date range
+            if ($startDate > $endDate) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Tanggal mulai tidak boleh lebih besar dari tanggal akhir.'
+                ], 422);
+            }
+            
+            // Get monthly total from purchase_order_items
+            $monthlyTotal = DB::table('purchase_order_items')
+                ->join('purchase_orders', 'purchase_orders.id', '=', 'purchase_order_items.purchase_order_id')
+                ->whereBetween('purchase_orders.date', [$startDate, $endDate])
+                ->where('purchase_orders.status', 'berhasil')
+                ->sum('purchase_order_items.total');
+
+            $totalTransactions = PurchaseOrder::whereBetween('date', [$startDate, $endDate])->count();
+            $successfulTransactions = PurchaseOrder::whereBetween('date', [$startDate, $endDate])->where('status', 'berhasil')->count();
+            
+            // Get all transactions in the date range
+            $transactions = PurchaseOrder::with(['items' => function($query) {
+                    $query->select('purchase_order_id', 'product_name', 'category_name', 'price', 'stock', 'total');
+                }])
+                ->select('id', 'date', 'status', 'notes')
+                ->whereBetween('date', [$startDate, $endDate])
+                ->orderBy('date', 'desc')
+                ->get()
+                ->map(function($order) {
+                    $totalItems = $order->items->sum('stock');
+                    $totalPrice = $order->items->sum('total');
+                    
+                    return [
+                        'id' => 'T' . str_pad($order->id, 7, '0', STR_PAD_LEFT),
+                        'date' => Carbon::parse($order->date)->format('d/m/Y'),
+                        'status' => ucfirst($order->status),
+                        'items_count' => $totalItems,
+                        'total_price' => $totalPrice,
+                        'formatted_total' => 'Rp. ' . number_format($totalPrice, 0, ',', '.'),
+                        'items' => $order->items
+                    ];
+                });
+
+            // Get product statistics
+            $productStats = DB::table('purchase_order_items')
+                ->join('purchase_orders', 'purchase_orders.id', '=', 'purchase_order_items.purchase_order_id')
+                ->whereBetween('purchase_orders.date', [$startDate, $endDate])
+                ->where('purchase_orders.status', 'berhasil')
+                ->select('product_name', 
+                    DB::raw('SUM(stock) as total_sold'),
+                    DB::raw('SUM(total) as total_revenue'),
+                    DB::raw('COUNT(*) as transaction_count'))
+                ->groupBy('product_name')
+                ->orderBy('total_revenue', 'desc')
+                ->get()
+                ->map(function($product) {
+                    return [
+                        'product_name' => $product->product_name,
+                        'total_sold' => $product->total_sold,
+                        'transaction_count' => $product->transaction_count,
+                        'formatted_revenue' => 'Rp. ' . number_format($product->total_revenue, 0, ',', '.')
+                    ];
+                });
+
+            $totalStaff = User::where('role', 'staff')->count();
+            $totalProducts = Product::count();
+
+            $this->logOperation('generate', 'PrintReport', null, [
+                'date_range' => [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')],
+                'transactions_count' => $transactions->count()
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'transactions' => $transactions,
+                    'product_stats' => $productStats,
+                    'total_transactions' => $totalTransactions,
+                    'successful_transactions' => $successfulTransactions,
+                    'formatted_monthly_total' => 'Rp. ' . number_format($monthlyTotal, 0, ',', '.'),
+                    'total_products' => $totalProducts,
+                    'start_date' => $startDate->format('d/m/Y'),
+                    'end_date' => $endDate->format('d/m/Y'),
+                    'printed_at' => now()->format('d/m/Y H:i'),
+                    'printed_by' => auth()->user()->name ?? 'Unknown',
+                    'user_role' => auth()->user()->role ?? 'Unknown'
+                ]
+            ]);
+        }, 'mengambil data laporan cetak', $request);
+    }
 } 
